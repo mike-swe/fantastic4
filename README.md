@@ -49,7 +49,7 @@ Entities MVP
 
 1. User
 
-user_id (Primary Key)
+id (Primary Key)
 username (unique)
 password 
 email
@@ -63,7 +63,7 @@ One-to-Many with Comment (as author)
 
 2. Project
 
-project_id (Primary Key)
+id (Primary Key)
 name
 description
 status (ACTIVE, ARCHIVED)
@@ -79,7 +79,7 @@ One-to-Many with Issue
 
 3. Issue
 
-issue_id (Primary Key)
+id (Primary Key)
 title
 description
 status (OPEN, IN_PROGRESS, RESOLVED, CLOSED - enum)
