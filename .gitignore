@@ -162,4 +162,10 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 
+#Ignores idea folder
+.idea/
+*.iml
+out/
+gen/
+
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,intellij+iml,java,gradle
