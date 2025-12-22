@@ -164,4 +164,7 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 
+.DS_Store
+**/.DS_Store
+
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,intellij+iml,java,gradle
