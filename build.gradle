@@ -33,11 +33,13 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+
 	// copy pasted from teams chat instructor recommendation
 	implementation "org.hibernate.orm:hibernate-community-dialects:7.1.8.Final"
 
 	// https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
 	implementation("org.xerial:sqlite-jdbc:3.51.1.0")
+
 }
 
 tasks.named('test') {

@@ -2,6 +2,7 @@
 Team Fantastic4
 
 
+
 This application should support three types of users: Admin in charge of creating projects, Testers that create issues when they find defects in a project, and Developers that update issues as they deploy fixes. Since you are building this application from the ground up there is flexibility in many design choices, as long as the core MVP requirements are met
 
 #Application Features
@@ -120,3 +121,4 @@ id (Primary Key)
 projectId (Foreign Key to Project)
 userId (Foreign Key to User)
 assignedAt
+
