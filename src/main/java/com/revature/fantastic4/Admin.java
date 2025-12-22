@@ -11,8 +11,8 @@ Public class Admin {
     private String username;
     @Column
     private String password;
-<<<<<<< HEAD
+
 }
-=======
+
 }
->>>>>>> origin/main
+
