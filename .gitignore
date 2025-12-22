@@ -28,7 +28,9 @@
 .idea/**/dynamic.xml
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
+
 .idea/**
+
 # Gradle
 .idea/**/gradle.xml
 .idea/**/libraries
@@ -161,5 +163,8 @@ gradle-app.setting
 ### Gradle Patch ###
 # Java heap dump
 *.hprof
+
+.DS_Store
+**/.DS_Store
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,intellij+iml,java,gradle
