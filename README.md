@@ -3,7 +3,7 @@ Team Fantastic4
 
 
 
-This application should support three types of users: Admin in charge of creating projects, Testers that create issues when they find defects in a project, and Developers that update issues as they deploy fixes. Since you are building this application from the ground up there is flexibility in many design choices, as long as the core MVP requirements are met
+This application should support three types of users: com.revature.fantastic4.entity.Admin in charge of creating projects, Testers that create issues when they find defects in a project, and Developers that update issues as they deploy fixes. Since you are building this application from the ground up there is flexibility in many design choices, as long as the core MVP requirements are met
 
 #Application Features
 
@@ -31,7 +31,7 @@ create, update, view
 create, update, view
 
 Business Rules
-Admin can create projects and add Testers/Developers to projects
+com.revature.fantastic4.entity.Admin can create projects and add Testers/Developers to projects
 Testers can open new issues in a project
 Developers can move issues to in progress and resolved when they finish their work
 Testers can close issues or move them back to open if needed
@@ -68,13 +68,13 @@ id (Primary Key)
 name
 description
 status (ACTIVE, ARCHIVED)
-createdBy (Foreign Key to User - the Admin who created it) or user_id 
+createdBy (Foreign Key to User - the com.revature.fantastic4.entity.Admin who created it) or user_id 
 createdAt
 updatedAt
 
 Relationships:
 
-Many-to-One with User (creator - Admin)
+Many-to-One with User (creator - com.revature.fantastic4.entity.Admin)
 Many-to-Many with User (assigned Testers/Developers)
 One-to-Many with Issue
 
@@ -87,7 +87,7 @@ status (OPEN, IN_PROGRESS, RESOLVED, CLOSED - enum)
 severity (LOW, MEDIUM, HIGH, CRITICAL - enum)
 priority (LOW, MEDIUM, HIGH, CRITICAL - enum)
 project_id (Foreign Key to Project)
-createdBy (Foreign Key to User - the Tester who created it) user_id
+createdBy (Foreign Key to User - the com.revature.fantastic4.entity.Tester who created it) user_id
 assignedTo (Foreign Key to User - the Developer assigned, nullable) user_id
 createdAt
 updatedAt
