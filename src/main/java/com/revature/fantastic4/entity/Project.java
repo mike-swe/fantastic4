@@ -1,5 +1,6 @@
 package com.revature.fantastic4.entity;
 
+import com.revature.fantastic4.enums.ProjectStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,9 +38,6 @@ public class Project {
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Issue> issues = new HashSet<>();
