@@ -1,4 +1,6 @@
 package com.revature.fantastic4.repository;
+import com.revature.fantastic4.entity.Issue;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 @Repository
 public interface IssueRepository extends JpaRepository<Issue, UUID>
