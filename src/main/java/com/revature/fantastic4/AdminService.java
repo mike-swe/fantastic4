@@ -1,3 +1,5 @@
+import com.revature.fantastic4.repository.AdminRepository;
+
 public class AdminService {
     private AdminRepository repository;
     // Admin service
