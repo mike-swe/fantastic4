@@ -1,5 +1,6 @@
 package com.revature.fantastic4.entity;
 
+import com.revature.fantastic4.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 

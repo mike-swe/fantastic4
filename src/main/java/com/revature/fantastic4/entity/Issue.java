@@ -1,5 +1,8 @@
 package com.revature.fantastic4.entity;
 
+import com.revature.fantastic4.enums.IssueStatus;
+import com.revature.fantastic4.enums.Priority;
+import com.revature.fantastic4.enums.Severity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -47,21 +50,8 @@ public class Issue {
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assigned_to")
-    private User assignedTo;
-
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
-
-    @Column(name = "resolved_at")
-    private Instant resolvedAt;
-
-    @Column(name = "closed_at")
-    private Instant closedAt;
 
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Comment> comments = new HashSet<>();
