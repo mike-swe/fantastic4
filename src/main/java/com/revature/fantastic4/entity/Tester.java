@@ -1,3 +1,5 @@
+package com.revature.fantastic4.entity;
+
 @Data
 @NoArgsConstructor
 @Entity
