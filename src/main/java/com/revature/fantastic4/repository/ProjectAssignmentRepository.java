@@ -12,5 +12,7 @@ import java.util.UUID;
 @Repository
 public interface ProjectAssignmentRepository extends JpaRepository<ProjectAssignment, UUID> {
     List<ProjectAssignment> findByProject(Project project);
+    List<ProjectAssignment> findByUser(User user);
     boolean existsByProjectAndUser(Project project, User user);
 }
+
