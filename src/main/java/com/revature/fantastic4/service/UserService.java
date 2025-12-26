@@ -5,34 +5,35 @@ import com.revature.fantastic4.entity.ProjectAssignment;
 import com.revature.fantastic4.entity.User;
 import com.revature.fantastic4.enums.Role;
 import com.revature.fantastic4.repository.ProjectAssignmentRepository;
-import com.revature.fantastic4.repository.ProjectRepository;
 import com.revature.fantastic4.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
-    private final ProjectRepository projectRepository;
     private final ProjectAssignmentRepository projectAssignmentRepository;
+    private final ProjectService projectService;
 
     public UserService(
-        UserRepository userRepository, 
-        ProjectRepository projectRepository,
-        ProjectAssignmentRepository projectAssignmentRepository) {
+        UserRepository userRepository,
+        ProjectAssignmentRepository projectAssignmentRepository,
+        ProjectService projectService) {
         this.userRepository = userRepository;
-        this.projectRepository = projectRepository;
         this.projectAssignmentRepository = projectAssignmentRepository;
+        this.projectService = projectService;
     }
 
     public ProjectAssignment addUserToProject(UUID projectId, UUID userId, User adminUser) {
  
         validateAdminRole(adminUser);
 
-        Project project = getProjectById(projectId);
+        Project project = projectService.getProjectById(projectId);
         User userToAssign = getUserById(userId);
 
         validateUserCanBeAssigned(userToAssign);
@@ -67,13 +68,28 @@ public class UserService {
         }
     }
 
-    private User getUserById(UUID userId) {
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    public User getUserById(UUID userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User with ID " + userId + " not found"));
     }
 
-    private Project getProjectById(UUID projectId) {
-        return projectRepository.findById(projectId)
-                .orElseThrow(() -> new IllegalArgumentException("Project with ID " + projectId + " not found"));
+    public List<Project> getUserProjects(UUID userId) {
+        User user = getUserById(userId);
+        List<ProjectAssignment> assignments = projectAssignmentRepository.findByUser(user);
+        return assignments.stream()
+                .map(ProjectAssignment::getProject)
+                .collect(Collectors.toList());
+    }
+
+    public List<User> getProjectUsers(UUID projectId) {
+        Project project = projectService.getProjectById(projectId);
+        List<ProjectAssignment> assignments = projectAssignmentRepository.findByProject(project);
+        return assignments.stream()
+                .map(ProjectAssignment::getUser)
+                .collect(Collectors.toList());
     }
 }
