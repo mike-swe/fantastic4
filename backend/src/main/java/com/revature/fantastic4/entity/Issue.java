@@ -53,7 +53,7 @@ public class Issue {
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
-    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Comment> comments = new HashSet<>();
+//    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<Comment> comments = new HashSet<>();
 
 }
