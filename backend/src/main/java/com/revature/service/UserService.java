@@ -61,12 +61,14 @@ public class UserService {
 
 
     private void validateUserCanBeAssigned(User user) {
-        if (user.getRole() == Role.ADMIN) {
-            throw new IllegalArgumentException("Admin users cannot be assigned to projects");
-        }
         if (user == null) {
             throw new IllegalArgumentException("Null users cannot be assigned to projects");
         }
+        
+        if (user.getRole() == Role.ADMIN) {
+            throw new IllegalArgumentException("Admin users cannot be assigned to projects");
+        }
+        
         if (user.getRole() != Role.TESTER && user.getRole() != Role.DEVELOPER) {
             throw new IllegalArgumentException("Only Testers and Developers can be assigned to projects");
         }

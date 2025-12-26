@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 import com.revature.fantastic4.enums.Role;
 import com.revature.fantastic4.entity.ProjectAssignment;
 
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
