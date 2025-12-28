@@ -14,7 +14,6 @@ import java.util.UUID;
 public interface IssueRepository extends JpaRepository<Issue, UUID>
 {
     List<Issue> findByCreatedBy(User createdBy);
+    List<Issue> findByProject(com.revature.fantastic4.entity.Project project);
 
-    //List<Issue> findByAssignedTo(User assignedTo);
-    //We dont actually have an assignedto field in Issue
-}
+  }

@@ -1,4 +1,3 @@
 rootProject.name = 'fantastic4'
 
 include 'backend'
-include 'frontend'
