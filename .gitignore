@@ -214,6 +214,8 @@ backend/.gradletasknamecache
 !backend/gradle/wrapper/gradle-wrapper.jar
 !backend/gradle/wrapper/gradle-wrapper.properties
 
+bin/
+
 # ==========================================
 # FRONTEND (Angular 17+)
 # ==========================================
@@ -245,3 +247,4 @@ frontend/connect.lock
 .history
 .ionide
 *.vsix
+
