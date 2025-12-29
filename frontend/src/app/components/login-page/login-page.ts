@@ -1,6 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 
 @Component({
   selector: 'app-login-page',
@@ -9,6 +9,8 @@ import { RouterLink } from '@angular/router';
   styleUrl: './login-page.css',
 })
 export class LoginPage {
+
+  private router = inject(Router);
 
 usernameInput = ""
 passwordInput = ""
@@ -20,7 +22,7 @@ validateLogin() {
   }
   else {
     this.failedLoginMessage.set("")
-    console.log('ok')
+    this.router.navigate(['/dashboard'])
   }
 }
 /*
