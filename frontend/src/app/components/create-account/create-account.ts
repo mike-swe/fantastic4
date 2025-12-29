@@ -1,12 +1,17 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from "@angular/router";
+import { FormsModule } from '@angular/forms';
+import { RouterOutlet, RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-create-account',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, FormsModule, RouterLink],
   templateUrl: './create-account.html',
   styleUrl: './create-account.css',
 })
 export class CreateAccount {
+
+usernameInput = '';
+passwordInput = '';
+
 
 }
