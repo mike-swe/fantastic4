@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -9,7 +9,20 @@ import { FormsModule } from '@angular/forms';
 })
 export class LoginPage {
 
-usernameInput = "";
+usernameInput = ""
 passwordInput = ""
+failedLoginMessage = signal("");
+
+validateLogin() {
+  if (this.usernameInput != "test" || this.passwordInput != "test"){
+    this.failedLoginMessage.set("the number you have dialed is not in service")
+  }
+  else {
+    this.failedLoginMessage.set("")
+    console.log('ok')
+  }
+}
+//button call login user 
+//in function hard code if user input = ect 
 
 }
