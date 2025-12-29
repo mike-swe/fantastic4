@@ -31,7 +31,7 @@ public class ProjectService {
         project.setName(name.trim());
         project.setDescription(description != null ? description.trim() : null);
         project.setStatus(ProjectStatus.ACTIVE);
-        // project.setCreatedBy(adminUser);
+        project.setCreatedBy(adminUser);
         project.setCreatedAt(Instant.now());
         
         return projectRepository.save(project);
