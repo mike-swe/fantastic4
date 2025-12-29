@@ -68,6 +68,17 @@ public class UserService {
         }
     }
 
+    public User authenticate(String username, String password) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
+        
+        if (!user.getPassword().equals(password)) {
+            throw new IllegalArgumentException("Invalid username or password");
+        }
+        
+        return user;
+    }
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
