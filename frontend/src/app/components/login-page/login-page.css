@@ -14,3 +14,8 @@ margin: 2rem auto; /* auto is centering horizontally*/
     color: black;
     text-align: center;
 }
+
+.error {
+    color: red;
+    text-align: center;
+}
