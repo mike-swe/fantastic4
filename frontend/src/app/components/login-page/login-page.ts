@@ -1,9 +1,10 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login-page',
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './login-page.html',
   styleUrl: './login-page.css',
 })
@@ -22,7 +23,11 @@ validateLogin() {
     console.log('ok')
   }
 }
-//button call login user 
-//in function hard code if user input = ect 
+/*
+todo
+route to dashboard if not failed login
+route to register
+
+*/
 
 }
