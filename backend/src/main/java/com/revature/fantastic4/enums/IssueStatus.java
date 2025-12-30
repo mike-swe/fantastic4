@@ -6,5 +6,3 @@ public enum IssueStatus {
     RESOLVED,
     CLOSED
 }
-
-
