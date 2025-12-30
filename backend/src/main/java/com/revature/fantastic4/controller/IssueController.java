@@ -1,6 +1,7 @@
 package com.revature.fantastic4.controller;
 
 import com.revature.fantastic4.entity.Issue;
+import com.revature.fantastic4.entity.IssueHistory;
 import com.revature.fantastic4.entity.User;
 import com.revature.fantastic4.enums.IssueStatus;
 import com.revature.fantastic4.service.IssueService;
@@ -107,6 +108,12 @@ public class IssueController {
     public ResponseEntity<List<Issue>> getIssuesByUser(@PathVariable UUID userId) {
         List<Issue> issues = issueService.getIssuesByUser(userId);
         return ResponseEntity.ok(issues);
+    } 
+
+    @GetMapping("/{issueId}/history")
+    public ResponseEntity<List<IssueHistory>> getIssueHistory(@PathVariable UUID issueId){
+        List<IssueHistory>history = issueService.getIssueHistory(issueId);
+        return ResponseEntity.ok(history);
     }
 
 }
