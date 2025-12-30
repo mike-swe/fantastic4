@@ -25,4 +25,19 @@ public class AuditService
         log.setDetails(details);
         return auditLogRepository.save(log);
     }
+
+    public List<AuditLog> getAllLogsByActor(Long actorId) {
+        List<AuditLog> logsByActor = auditLogRepository.findByActorUserId(actorId);
+        return logsByActor;
+    }
+
+    public List<AuditLog> getAllLogsByAction(String action) {
+        List<AuditLog> logsByAction = auditLogRepository.findByAction(action);
+        return logsByAction;
+    }
+
+    public List<AuditLog> getAllLogsByEntityType(String entityType) {
+        List<AuditLog> logsByEntityType = auditLogRepository.findByEntityType(entityType);
+        return logsByEntityType;
+    }
 }
