@@ -5,5 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AuditLogRepository extends JpaRepository<AuditLog, Long> 
 {
-
+    List<AuditLog> findByActorUserId(Long actorId);
+    List<AuditLog> findByAction(String action);
+    List<AuditLog> findByEntityType(String entityType);
 }
