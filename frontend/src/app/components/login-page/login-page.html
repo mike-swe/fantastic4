@@ -1,0 +1,19 @@
+
+
+<div class="parent">
+  <h1>Login</h1>
+  <input type="text" [(ngModel)]="usernameInput" placeholder="Username">
+  <input type="password" [(ngModel)]="passwordInput" placeholder="Password">
+  <button (click) = "validateLogin()">Login</button>
+
+  @if(failedLoginMessage()) {
+    <div class = "error"> 
+      {{failedLoginMessage()}} 
+    </div>
+  }
+
+  <p>
+    <a routerLink="/create-account">create account</a>
+  </p>
+
+</div>
