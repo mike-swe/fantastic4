@@ -69,7 +69,9 @@ public class ProjectService {
         return projectRepository.findAll();
     }
 
-    public List<Project> getAllProjectsByUser(User user) { return projectRepository.findByCreatedBy(user); }
+    public List<Project> getAllProjectsByUser(User user) {
+        return projectRepository.findByCreatedBy(user);
+    }
 
     private void validateAdminRole(User user) {
         if (user == null) {
