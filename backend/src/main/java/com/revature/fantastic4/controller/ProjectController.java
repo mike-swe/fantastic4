@@ -23,6 +23,8 @@ public class ProjectController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
 
+    private final ProjectRepository projectRepository;
+
     @PostMapping
     public ResponseEntity<Project> createProject(
             @RequestBody Project project,
@@ -66,6 +68,12 @@ public class ProjectController {
         return ResponseEntity.ok(projects);
     }
 
+    @GetMapping
+    public ResponseEntity<List<Project>> getAllProjectsByUser(User user) {
+        List<Project> projectsByUser = projectService.getAllProjectsByUser(user);
+        return ResponseEntity.ok(projectsByUser);
+
+    }
     @GetMapping("/{projectId}")
     public ResponseEntity<Project> getProjectById(@PathVariable UUID projectId) {
         Project project = projectService.getProjectById(projectId);
