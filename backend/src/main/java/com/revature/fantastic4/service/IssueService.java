@@ -1,12 +1,14 @@
 package com.revature.fantastic4.service;
 
 import com.revature.fantastic4.entity.Issue;
+import com.revature.fantastic4.entity.IssueHistory;
 import com.revature.fantastic4.entity.Project;
 import com.revature.fantastic4.entity.User;
 import com.revature.fantastic4.enums.IssueStatus;
 import com.revature.fantastic4.enums.Priority;
 import com.revature.fantastic4.enums.Role;
 import com.revature.fantastic4.enums.Severity;
+import com.revature.fantastic4.repository.IssueHistoryRepository;
 import com.revature.fantastic4.repository.IssueRepository;
 import com.revature.fantastic4.repository.ProjectAssignmentRepository;
 import org.springframework.stereotype.Service;
@@ -22,16 +24,19 @@ public class IssueService {
     private final ProjectService projectService;
     private final ProjectAssignmentRepository projectAssignmentRepository;
     private final UserService userService;
-
+    private final IssueHistoryRepository issueHistoryRepository;
+    
     public IssueService(
             IssueRepository issueRepository,
             ProjectService projectService,
             ProjectAssignmentRepository projectAssignmentRepository,
-            UserService userService) {
+            UserService userService,
+            IssueHistoryRepository issueHistoryRepository) {
         this.issueRepository = issueRepository;
         this.projectService = projectService;
         this.projectAssignmentRepository = projectAssignmentRepository;
         this.userService = userService;
+        this.issueHistoryRepository = issueHistoryRepository;
     }
 
     private void validateTesterRole(User user) {
@@ -164,6 +169,11 @@ public class IssueService {
     public List<Issue> getIssuesByUser(UUID userId) {
         User user = userService.getUserById(userId);
         return issueRepository.findByCreatedBy(user);
+    }   
+
+    public List<IssueHistory> getIssueHistory(UUID issueId){
+        Issue issue = getIssueById(issueId);
+        return issueHistoryRepository.findByIssueOrderByChangedAtDesc(issue);
     }
 
 }
