@@ -2,13 +2,13 @@
 
 <div class="parent">
   <h1>Login</h1>
-  <input type="text" [(ngModel)]="usernameInput" placeholder="Username">
-  <input type="password" [(ngModel)]="passwordInput" placeholder="Password">
+  <input type="text" id = "username" [(ngModel)]="usernameInput" placeholder="Username">
+  <input type="password" id = "password" [(ngModel)]="passwordInput" placeholder="Password">
   <button (click) = "validateLogin()">Login</button>
 
   @if(failedLoginMessage()) {
-    <div class = "error"> 
-      {{failedLoginMessage()}} 
+    <div class = "error">
+      {{failedLoginMessage()}}
     </div>
   }
 
