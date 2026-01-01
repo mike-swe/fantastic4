@@ -19,6 +19,7 @@ failedLoginMessage = signal("");
 validateLogin() {
   if (this.usernameInput != "test" || this.passwordInput != "test"){
     this.failedLoginMessage.set("the number you have dialed is not in service")
+    this.router.navigate(['/register'])
   }
   else {
     this.failedLoginMessage.set("")
