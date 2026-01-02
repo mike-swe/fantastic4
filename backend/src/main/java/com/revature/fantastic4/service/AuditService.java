@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 803c199 (creating the dashboard)
 //package com.revature.fantastic4.service;
 //
 //import com.revature.fantastic4.entity.AuditLog;
@@ -27,6 +30,7 @@
 //        return auditLogRepository.save(log);
 //    }
 //}
+<<<<<<< HEAD
 =======
 package com.revature.fantastic4.service;
 
@@ -72,3 +76,5 @@ public class AuditService
     }
 }
 >>>>>>> c55563e (Implemented repository methods from Project and AuditLog)
+=======
+>>>>>>> 803c199 (creating the dashboard)
