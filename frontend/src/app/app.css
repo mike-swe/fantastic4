@@ -1,2 +1,20 @@
+.app-layout {
+  display: flex;
+  margin-top: 60px; 
+  height: calc(100vh - 60px);
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
 
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  background-color: #ffffff;
+}
 
+.main-content .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
