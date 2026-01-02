@@ -1,3 +1,71 @@
-<h1>dashboard stuff</h1>
+<div class="dashboard">
+  <h1 class="dashboard-title">Welcome, Admin!</h1>
 
-<button routerLink="/login">back</button>
+  <div class="section">
+    <div class="section-header">
+      <h2>All Projects</h2>
+      <button class="btn-primary">+ New Project</button>
+    </div>
+    <div class="projects-grid">
+      @for (project of projects; track project.id) {
+        <div class="project-card">
+          <h3 class="project-name">{{ project.name }}</h3>
+          <p class="project-description">{{ project.description }}</p>
+          <div class="project-meta">
+            <span class="project-status" [class.active]="project.status === 'ACTIVE'">
+              {{ project.status }}
+            </span>
+            <span class="project-issues">
+              {{ project.issues?.length || 0 }} issues
+            </span>
+          </div>
+        </div>
+      } @empty {
+        <p class="empty-state">No projects found. Create your first project!</p>
+      }
+    </div>
+  </div>
+
+
+  <div class="section">
+    <div class="section-header">
+      <h2>Recent Issues</h2>
+    </div>
+    <div class="issues-table-container">
+      <table class="issues-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Project</th>
+            <th>Status</th>
+            <th>Priority</th>
+            <th>Assigned To</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (issue of issues; track issue.id) {
+            <tr>
+              <td>{{ issue.title }}</td>
+              <td>{{ issue.project?.name || 'N/A' }}</td>
+              <td>
+                <span class="status-badge" [class]="'status-' + issue.status.toLowerCase()">
+                  {{ issue.status }}
+                </span>
+              </td>
+              <td>
+                <span class="priority-badge" [class]="'priority-' + issue.priority.toLowerCase()">
+                  {{ issue.priority }}
+                </span>
+              </td>
+              <td>{{ issue.assignedTo?.username || 'Unassigned' }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="empty-state">No issues found.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
