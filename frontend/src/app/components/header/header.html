@@ -1,0 +1,13 @@
+<div class="app-header">
+  <div class="header-left">
+    <span class="logo">
+      <a routerLink="/dashboard">Fantastic4</a>
+    </span>
+  </div>
+  <div class="header-right">
+    <span class="username">{{ getCurrentUser()?.username || 'User' }}</span>
+    <span class="role-badge">{{ getUserRole() || 'GUEST' }}</span>
+    <button class="logout-btn" (click)="logout()">Logout</button>
+  </div>
+</div>
+

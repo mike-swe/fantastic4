@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { Role } from '../../enum/role';
 import { Project } from '../../interfaces/project';
 import { Issues} from '../../interfaces/issues';
@@ -11,7 +9,7 @@ import { IssueService } from '../../services/issue-service';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterOutlet, RouterLink, FormsModule],
+  imports: [],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -54,17 +52,12 @@ export class Dashboard implements OnInit {
     if (this.userRole === Role.ADMIN){
       this.issueService.getAllIssues().subscribe(issues => this.issues = issues);
     } else if (this.userRole === Role.TESTER || this.userRole === Role.DEVELOPER) {
-      // Testers/Developers see issues for their projects or issues they created
+
       if (this.currentUser?.id) {
         this.issueService.getIssuesByUser(this.currentUser.id).subscribe(issues => {
           this.issues = issues;
         });
       }
     }
-
   }
-
-
-
-//
 }
