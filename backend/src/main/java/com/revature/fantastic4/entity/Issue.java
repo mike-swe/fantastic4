@@ -53,6 +53,15 @@ public class Issue {
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
+    @Column(name="updated_at", nullable = false)
+    private Instant updatedAt;
+
+    @Column(name = "resolved_at", nullable = true)
+    private Instant resolvedAt;
+
+    @Column(name = "closed_at", nullable = true)
+    private Instant closedAt;
+
 //    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private Set<Comment> comments = new HashSet<>();
 
