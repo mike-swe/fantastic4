@@ -4,6 +4,7 @@ import com.revature.fantastic4.entity.Issue;
 import com.revature.fantastic4.entity.IssueHistory;
 import com.revature.fantastic4.entity.User;
 import com.revature.fantastic4.enums.IssueStatus;
+import com.revature.fantastic4.enums.Role;
 import com.revature.fantastic4.service.IssueService;
 import com.revature.fantastic4.service.UserService;
 import com.revature.fantastic4.util.JwtUtil;
@@ -108,7 +109,25 @@ public class IssueController {
     public ResponseEntity<List<Issue>> getIssuesByUser(@PathVariable UUID userId) {
         List<Issue> issues = issueService.getIssuesByUser(userId);
         return ResponseEntity.ok(issues);
-    } 
+    }
+
+    @GetMapping("/assigned/{developerId}")
+    public ResponseEntity<List<Issue>> getAssignedIssues(
+            @PathVariable UUID developerId,
+            @RequestHeader("Authorization") String authHeader) {
+        String token = jwtUtil.extractTokenFromHeader(authHeader);
+        UUID userId = jwtUtil.extractId(token);
+        User user = userService.getUserById(userId);
+        
+        // Allow DEVELOPER to see their own assigned issues, or ADMIN to see any developer's issues
+        if (user.getRole() != Role.ADMIN && 
+            !userId.equals(developerId)) {
+            throw new IllegalArgumentException("You can only view your own assigned issues");
+        }
+        
+        List<Issue> issues = issueService.getIssuesAssignedToDeveloper(developerId);
+        return ResponseEntity.ok(issues);
+    }
 
     @GetMapping("/{issueId}/history")
     public ResponseEntity<List<IssueHistory>> getIssueHistory(@PathVariable UUID issueId){
