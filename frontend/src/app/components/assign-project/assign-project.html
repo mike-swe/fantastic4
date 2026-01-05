@@ -1,0 +1,104 @@
+<div class="assign-project-page">
+  <div class="assign-project-header">
+    <div class="header-content">
+      <div class="header-title-section">
+        <h1 class="page-title">Assign Users to Projects</h1>
+        <p class="page-subtitle">Manage project assignments for Testers and Developers</p>
+      </div>
+    </div>
+  </div>
+
+  @if (successMessage) {
+    <div class="alert alert-success">
+      {{ successMessage }}
+    </div>
+  }
+
+  @if (errorMessage) {
+    <div class="alert alert-error">
+      {{ errorMessage }}
+    </div>
+  }
+
+  <div class="assign-project-content">
+    @if (projects.length === 0) {
+      <div class="empty-state">
+        <p>No projects found. Create a project first to assign users.</p>
+      </div>
+    } @else {
+      <div class="projects-list">
+        @for (project of projects; track project.id) {
+          <div class="project-card">
+            <div class="project-header">
+              <div class="project-info">
+                <h3 class="project-name">{{ project.name }}</h3>
+                @if (project.description) {
+                  <p class="project-description">{{ project.description }}</p>
+                }
+              </div>
+              <span class="project-status" [class.status-active]="project.status === 'ACTIVE'">
+                {{ project.status }}
+              </span>
+            </div>
+
+            <div class="assigned-users-section">
+              <h4 class="section-title">Assigned Users</h4>
+              @if (project.assignedUsers.length === 0) {
+                <p class="no-users">No users assigned to this project</p>
+              } @else {
+                <div class="assigned-users-list">
+                  @for (user of project.assignedUsers; track user.id) {
+                    <div class="user-badge">
+                      <div class="user-avatar" [class.avatar-tester]="user.role === Role.TESTER" [class.avatar-developer]="user.role === Role.DEVELOPER">
+                        {{ getUserInitials(user) }}
+                      </div>
+                      <div class="user-info">
+                        <span class="user-name">{{ user.username }}</span>
+                        <span class="user-role" [ngClass]="getUserRoleBadgeClass(user.role)">
+                          {{ user.role }}
+                        </span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="assign-section">
+              <h4 class="section-title">Assign User</h4>
+              <div class="assign-controls">
+                <select
+                  class="user-select"
+                  [(ngModel)]="project.selectedUserId"
+                  [disabled]="project.isAssigning || !usersLoaded || getAvailableUsersForProject(project).length === 0"
+                >
+                  <option value="">Select a user to assign</option>
+                  @for (user of getAvailableUsersForProject(project); track user.id) {
+                    <option [value]="user.id">
+                      {{ user.username }} ({{ user.role }})
+                    </option>
+                  }
+                </select>
+                <button
+                  class="btn-assign"
+                  (click)="assignUser(project)"
+                  [disabled]="!project.selectedUserId || project.isAssigning || !usersLoaded || getAvailableUsersForProject(project).length === 0"
+                >
+                  @if (project.isAssigning) {
+                    Assigning...
+                  } @else {
+                    Assign User
+                  }
+                </button>
+              </div>
+              @if (getAvailableUsersForProject(project).length === 0 && project.assignedUsers.length > 0) {
+                <p class="info-message">All available users are already assigned to this project</p>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
+

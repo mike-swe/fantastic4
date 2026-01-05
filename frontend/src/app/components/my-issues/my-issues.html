@@ -1,0 +1,152 @@
+<div class="issues-page">
+  <div class="issues-header">
+    <div class="header-content">
+      <div class="header-title-section">
+        <h1 class="issues-title">My Issues</h1>
+        <p class="issues-subtitle">Manage issues you've created</p>
+      </div>
+      <button class="btn-new-issue" (click)="createNewIssue()">
+        <span class="btn-icon">+</span> New Issue
+      </button>
+    </div>
+  </div>
+
+  <div class="search-filter-bar">
+    <div class="search-container">
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search issues by title or ID..."
+        [(ngModel)]="searchQuery"
+        (input)="onSearchChange()"
+      />
+    </div>
+    <div class="filter-container">
+      <select
+        class="filter-dropdown"
+        [(ngModel)]="selectedStatus"
+        (change)="onStatusChange()"
+      >
+        @for (status of statusOptions; track status) {
+          <option [value]="status">
+            {{ status === 'ALL' ? 'All Status' : status.replace('_', ' ') }}
+          </option>
+        }
+      </select>
+      <select
+        class="filter-dropdown"
+        [(ngModel)]="selectedSeverity"
+        (change)="onSeverityChange()"
+      >
+        @for (severity of severityOptions; track severity) {
+          <option [value]="severity">
+            {{ severity === 'ALL' ? 'All Severity' : severity }}
+          </option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="issues-content">
+    <div class="issues-grid">
+      @for (issue of filteredIssues; track issue.id) {
+        <div class="issue-card">
+          <div class="issue-header">
+            <span class="issue-id">{{ formatIssueId(issue.id) }}</span>
+            <div class="issue-tags">
+              <span 
+                class="tag" 
+                [style.background-color]="getStatusColor(issue.status)"
+                [style.color]="'#ffffff'"
+              >
+                {{ issue.status.replace('_', ' ') }}
+              </span>
+              <span 
+                class="tag" 
+                [style.background-color]="getSeverityColor(issue.severity)"
+                [style.color]="'#ffffff'"
+              >
+                {{ issue.severity }}
+              </span>
+              <span 
+                class="tag" 
+                [style.background-color]="getPriorityColor(issue.priority)"
+                [style.color]="'#ffffff'"
+              >
+                {{ issue.priority }}
+              </span>
+            </div>
+          </div>
+          
+          <h3 class="issue-title">{{ issue.title }}</h3>
+          <p class="issue-description">{{ truncateDescription(issue.description) }}</p>
+          
+          <div class="issue-details">
+            <span class="issue-project">{{ issue.project.name || 'Unknown Project' }}</span>
+            <span class="issue-updated">
+              Updated {{ formatDate(issue.updatedAt) }}
+            </span>
+          </div>
+          
+          <div class="issue-footer">
+            <div class="issue-assignment">
+              @if (issue.assignedTo) {
+                <div class="assignment-info">
+                  <span class="assignment-label">Assigned to</span>
+                  <div class="user-avatar" [style.background-color]="'#10b981'">
+                    {{ getUserInitials(issue.assignedTo) }}
+                  </div>
+                  <span class="user-name">{{ issue.assignedTo.username }}</span>
+                </div>
+              } @else {
+                <span class="unassigned">Unassigned</span>
+              }
+            </div>
+          </div>
+
+          <div class="status-update-section">
+            <h4 class="section-title">Update Status</h4>
+            <div class="status-buttons">
+              <button
+                class="btn-status"
+                [class.btn-status-open]="issue.status !== 'OPEN'"
+                [disabled]="issue.status === 'OPEN' || updatingStatus[issue.id]"
+                (click)="updateIssueStatus(issue, 'OPEN')"
+              >
+                @if (updatingStatus[issue.id]) {
+                  Updating...
+                } @else {
+                  Mark as Open
+                }
+              </button>
+              <button
+                class="btn-status"
+                [class.btn-status-closed]="issue.status !== 'CLOSED'"
+                [disabled]="issue.status === 'CLOSED' || updatingStatus[issue.id]"
+                (click)="updateIssueStatus(issue, 'CLOSED')"
+              >
+                @if (updatingStatus[issue.id]) {
+                  Updating...
+                } @else {
+                  Mark as Closed
+                }
+              </button>
+            </div>
+          </div>
+        </div>
+      } @empty {
+        <div class="empty-state">
+          <p>No issues found. Create your first issue to get started!</p>
+        </div>
+      }
+    </div>
+  </div>
+
+  @if (showModal) {
+    <app-new-issue-modal
+      (close)="onModalClose()"
+      (issueCreated)="onIssueCreated($event)"
+    ></app-new-issue-modal>
+  }
+</div>
+

@@ -5,9 +5,9 @@ gap: 5px;
 max-width: 350px;
 background-color: white;
 padding: 40px;
-border-radius: 8px; /* rounds the login box*/
+border-radius: 8px;
 max-width: 350px;
-margin: 2rem auto; /* auto is centering horizontally*/
+margin: 2rem auto; 
 }
 
 .parent h1 {

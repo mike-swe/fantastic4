@@ -1,5 +1,6 @@
 package com.revature.fantastic4.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.revature.fantastic4.enums.ProjectStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -42,10 +43,11 @@ public class Project {
     @Column(name = "updated_at", nullable = true)
     private Instant updatedAt;
 
-
+    @JsonIgnore
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Issue> issues = new HashSet<>();
-
+    
+    @JsonIgnore
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProjectAssignment> assignments = new HashSet<>();
 

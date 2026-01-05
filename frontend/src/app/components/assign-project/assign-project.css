@@ -1,0 +1,306 @@
+.assign-project-page {
+  color: #000000;
+  padding: 2rem;
+}
+
+.assign-project-header {
+  margin-bottom: 2rem;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+.header-title-section {
+  flex: 1;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: #000000;
+}
+
+.page-subtitle {
+  font-size: 1rem;
+  color: #666666;
+  margin: 0;
+}
+
+.alert {
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.alert-success {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #10b981;
+}
+
+.alert-error {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #ef4444;
+}
+
+.assign-project-content {
+  margin-top: 2rem;
+}
+
+.projects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.project-card {
+  background-color: #ffffff;
+  color: #1c1d23;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  transition: box-shadow 0.2s;
+}
+
+.project-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.project-info {
+  flex: 1;
+}
+
+.project-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: #1c1d23;
+}
+
+.project-description {
+  font-size: 0.9rem;
+  color: #666666;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.project-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background-color: #f5f5f5;
+  color: #666666;
+}
+
+.project-status.status-active {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.assigned-users-section,
+.assign-section {
+  margin-bottom: 1.5rem;
+}
+
+.assigned-users-section:last-child,
+.assign-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  color: #1c1d23;
+}
+
+.assigned-users-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.user-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: #f5f5f5;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.user-avatar.avatar-tester {
+  background-color: #f97316;
+}
+
+.user-avatar.avatar-developer {
+  background-color: #3b82f6;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.user-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #1c1d23;
+}
+
+.user-role {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+  width: fit-content;
+}
+
+.badge-tester {
+  background-color: #fff7ed;
+  color: #c2410c;
+}
+
+.badge-developer {
+  background-color: #eff6ff;
+  color: #1e40af;
+}
+
+.badge-admin {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.badge-default {
+  background-color: #f5f5f5;
+  color: #666666;
+}
+
+.no-users {
+  font-size: 0.9rem;
+  color: #999999;
+  font-style: italic;
+  margin: 0;
+}
+
+.assign-controls {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.user-select {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #000000;
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.user-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.user-select:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  color: #999999;
+}
+
+.btn-assign {
+  background-color: #10b981;
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+
+.btn-assign:hover:not(:disabled) {
+  background-color: #059669;
+}
+
+.btn-assign:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.info-message {
+  font-size: 0.85rem;
+  color: #666666;
+  margin: 0.5rem 0 0 0;
+  font-style: italic;
+}
+
+.empty-state {
+  text-align: center;
+  color: #666666;
+  padding: 3rem;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .assign-project-page {
+    padding: 1rem;
+  }
+
+  .project-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .assign-controls {
+    flex-direction: column;
+  }
+
+  .btn-assign {
+    width: 100%;
+  }
+
+  .assigned-users-list {
+    flex-direction: column;
+  }
+}
+
