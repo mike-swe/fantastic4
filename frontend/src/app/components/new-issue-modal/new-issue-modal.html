@@ -1,0 +1,131 @@
+<div class="modal-overlay" (click)="onBackdropClick($event)">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">Create New Issue</h2>
+      <button class="modal-close-btn" (click)="onCancel()" type="button" aria-label="Close modal">
+        ×
+      </button>
+    </div>
+
+    <form class="modal-form" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="issue-title" class="form-label">
+          Title <span class="required">*</span>
+        </label>
+        <input
+          type="text"
+          id="issue-title"
+          class="form-input"
+          [(ngModel)]="title"
+          name="title"
+          placeholder="Enter issue title"
+          maxlength="255"
+          required
+          [disabled]="isLoading()"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="issue-description" class="form-label">
+          Description <span class="required">*</span>
+        </label>
+        <textarea
+          id="issue-description"
+          class="form-textarea"
+          [(ngModel)]="description"
+          name="description"
+          placeholder="Enter issue description"
+          rows="4"
+          required
+          [disabled]="isLoading()"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="issue-project" class="form-label">
+          Project <span class="required">*</span>
+        </label>
+        <select
+          id="issue-project"
+          class="form-input"
+          [(ngModel)]="selectedProjectId"
+          name="project"
+          required
+          [disabled]="isLoading()"
+        >
+          <option value="">Select a project</option>
+          @for (project of projects; track project.id) {
+            <option [value]="project.id">{{ project.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="issue-severity" class="form-label">
+            Severity <span class="required">*</span>
+          </label>
+          <select
+            id="issue-severity"
+            class="form-input"
+            [(ngModel)]="selectedSeverity"
+            name="severity"
+            required
+            [disabled]="isLoading()"
+          >
+            @for (severity of severityOptions; track severity) {
+              <option [value]="severity">{{ severity }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="issue-priority" class="form-label">
+            Priority <span class="required">*</span>
+          </label>
+          <select
+            id="issue-priority"
+            class="form-input"
+            [(ngModel)]="selectedPriority"
+            name="priority"
+            required
+            [disabled]="isLoading()"
+          >
+            @for (priority of priorityOptions; track priority) {
+              <option [value]="priority">{{ priority }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      @if (errorMessage()) {
+        <div class="error-message">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn-cancel"
+          (click)="onCancel()"
+          [disabled]="isLoading()"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="btn-create"
+          [disabled]="!title.trim() || !description.trim() || !selectedProjectId || isLoading()"
+        >
+          @if (isLoading()) {
+            Creating...
+          } @else {
+            Create Issue
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+

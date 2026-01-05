@@ -1,0 +1,26 @@
+<div class="projects-page">
+  <div class="projects-header">
+    <div class="header-content">
+      <div class="header-title-section">
+        <h1 class="projects-title">My Projects</h1>
+        <p class="projects-subtitle">View and manage projects assigned to you</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="projects-content">
+    <div class="projects-grid">
+      @for (project of projects; track project.id) {
+        <div class="project-card">
+          <h3 class="project-name">{{ project.name }}</h3>
+          <p class="project-description">{{ project.description }}</p>
+        </div>
+      } @empty {
+        <div class="empty-state">
+          <p>No projects assigned. Contact an administrator to be assigned to a project.</p>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
