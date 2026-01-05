@@ -3,6 +3,7 @@ package com.revature.fantastic4.service;
 import com.revature.fantastic4.entity.Issue;
 import com.revature.fantastic4.entity.IssueHistory;
 import com.revature.fantastic4.entity.Project;
+import com.revature.fantastic4.entity.ProjectAssignment;
 import com.revature.fantastic4.entity.User;
 import com.revature.fantastic4.enums.IssueStatus;
 import com.revature.fantastic4.enums.Priority;
@@ -98,7 +99,9 @@ public class IssueService {
         issue.setStatus(IssueStatus.OPEN);
         issue.setProject(project);
         issue.setCreatedBy(tester);
-        issue.setCreatedAt(Instant.now());
+        Instant now = Instant.now();
+        issue.setCreatedAt(now);
+        issue.setUpdatedAt(now);
         
         return issueRepository.save(issue);
     }
@@ -116,6 +119,19 @@ public class IssueService {
         validateStatusTransitionForRole(newStatus, user.getRole());
         
         issue.setStatus(newStatus);
+        issue.setUpdatedAt(Instant.now());
+        
+        // Auto-assign to developer when they move to IN_PROGRESS or RESOLVED
+        if (user.getRole() == Role.DEVELOPER && 
+            (newStatus == IssueStatus.IN_PROGRESS || newStatus == IssueStatus.RESOLVED)) {
+            issue.setAssignedTo(user);
+        }
+        
+        // Set resolvedAt timestamp when resolved
+        if (newStatus == IssueStatus.RESOLVED) {
+            issue.setResolvedAt(Instant.now());
+        }
+        
         return issueRepository.save(issue);
     }
 
@@ -149,6 +165,7 @@ public class IssueService {
             issue.setPriority(priority);
         }
         
+        issue.setUpdatedAt(Instant.now());
         return issueRepository.save(issue);
     }
 
@@ -169,7 +186,24 @@ public class IssueService {
     public List<Issue> getIssuesByUser(UUID userId) {
         User user = userService.getUserById(userId);
         return issueRepository.findByCreatedBy(user);
-    }   
+    }
+
+    public List<Issue> getIssuesAssignedToDeveloper(UUID developerId) {
+        User developer = userService.getUserById(developerId);
+        if (developer.getRole() != Role.DEVELOPER) {
+            throw new IllegalArgumentException("User with ID " + developerId + " is not a DEVELOPER");
+        }
+        
+        // Get all projects assigned to this developer
+        List<ProjectAssignment> assignments = 
+            projectAssignmentRepository.findByUser(developer);
+        
+        // Get all issues from those projects
+        return assignments.stream()
+            .flatMap(assignment -> issueRepository.findByProject(assignment.getProject()).stream())
+            .distinct()
+            .toList();
+    }
 
     public List<IssueHistory> getIssueHistory(UUID issueId){
         Issue issue = getIssueById(issueId);
