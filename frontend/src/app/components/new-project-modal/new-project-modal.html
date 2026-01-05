@@ -1,0 +1,71 @@
+<div class="modal-overlay" (click)="onBackdropClick($event)">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">{{ isEditMode ? 'Edit Project' : 'Create New Project' }}</h2>
+      <button class="modal-close-btn" (click)="onCancel()" type="button" aria-label="Close modal">
+        ×
+      </button>
+    </div>
+
+    <form class="modal-form" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="project-name" class="form-label">
+          Project Name <span class="required">*</span>
+        </label>
+        <input
+          type="text"
+          id="project-name"
+          class="form-input"
+          [(ngModel)]="projectName"
+          name="projectName"
+          placeholder="Enter project name"
+          maxlength="200"
+          required
+          [disabled]="isLoading()"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="project-description" class="form-label">Description</label>
+        <textarea
+          id="project-description"
+          class="form-textarea"
+          [(ngModel)]="projectDescription"
+          name="projectDescription"
+          placeholder="Enter project description (optional)"
+          rows="4"
+          [disabled]="isLoading()"
+        ></textarea>
+      </div>
+
+      @if (errorMessage()) {
+        <div class="error-message">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn-cancel"
+          (click)="onCancel()"
+          [disabled]="isLoading()"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="btn-create"
+          [disabled]="!projectName.trim() || isLoading()"
+        >
+          @if (isLoading()) {
+            {{ isEditMode ? 'Updating...' : 'Creating...' }}
+          } @else {
+            {{ isEditMode ? 'Update Project' : 'Create Project' }}
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
