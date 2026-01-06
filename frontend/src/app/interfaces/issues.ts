@@ -1,5 +1,6 @@
 import { Project } from "./project";
 import { User } from "./user";
+import { Comment } from "./comment";
  
 export interface Issues {
     id: string;
@@ -12,5 +13,6 @@ export interface Issues {
     createdBy: User;
     assignedTo?: User | null;
     createdAt: string;
-    updatedAt?: string;  
+    updatedAt?: string;
+    comments?: Comment[];
 }
