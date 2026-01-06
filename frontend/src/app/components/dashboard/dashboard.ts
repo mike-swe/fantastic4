@@ -112,7 +112,7 @@ export class Dashboard implements OnInit {
           console.error('Dashboard - Error loading issues:', error);
         }
       });
-    } else if (this.userRole === Role.TESTER || this.userRole === Role.DEVELOPER) {
+    } else if (this.userRole === Role.TESTER) {
       if (this.currentUser?.id) {
         this.issueService.getIssuesByUser(this.currentUser.id).subscribe({
           next: (issues) => {
@@ -122,6 +122,19 @@ export class Dashboard implements OnInit {
           },
           error: (error) => {
             console.error('Dashboard - Error loading user issues:', error);
+          }
+        });
+      }
+    } else if (this.userRole === Role.DEVELOPER) {
+      if (this.currentUser?.id) {
+        this.issueService.getAssignedIssues(this.currentUser.id).subscribe({
+          next: (issues) => {
+            this.issues = issues;
+            console.log('Dashboard - Loaded assigned issues:', issues.length);
+            this.cdr.detectChanges();
+          },
+          error: (error) => {
+            console.error('Dashboard - Error loading assigned issues:', error);
           }
         });
       }
