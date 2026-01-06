@@ -1,0 +1,124 @@
+<div class="modal-overlay" (click)="onBackdropClick($event)">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">Issue Details</h2>
+      <button class="modal-close-btn" (click)="onCancel()" type="button" aria-label="Close modal">
+        ×
+      </button>
+    </div>
+
+    @if (issue) {
+      <div class="modal-content">
+        <div class="issue-details-section">
+          <div class="issue-header-info">
+            <h3 class="issue-title-large">{{ issue.title }}</h3>
+            <div class="issue-tags">
+              <span 
+                class="tag" 
+                [style.background-color]="getStatusColor(issue.status)"
+                [style.color]="'#ffffff'"
+              >
+                {{ issue.status.replace('_', ' ') }}
+              </span>
+              <span 
+                class="tag" 
+                [style.background-color]="getSeverityColor(issue.severity)"
+                [style.color]="'#ffffff'"
+              >
+                {{ issue.severity }}
+              </span>
+              <span 
+                class="tag" 
+                [style.background-color]="getPriorityColor(issue.priority)"
+                [style.color]="'#ffffff'"
+              >
+                {{ issue.priority }}
+              </span>
+            </div>
+          </div>
+
+          <div class="issue-description">
+            <h4 class="section-title">Description</h4>
+            <p class="description-text">{{ issue.description }}</p>
+          </div>
+
+          <div class="issue-meta-grid">
+            <div class="meta-item">
+              <span class="meta-label">Project</span>
+              <span class="meta-value">{{ issue.project?.name || 'N/A' }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Created By</span>
+              <span class="meta-value">{{ issue.createdBy?.username || 'N/A' }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Assigned To</span>
+              <span class="meta-value">{{ issue.assignedTo?.username || 'Unassigned' }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Created At</span>
+              <span class="meta-value">{{ formatDate(issue.createdAt) }}</span>
+            </div>
+            @if (issue.updatedAt) {
+              <div class="meta-item">
+                <span class="meta-label">Last Updated</span>
+                <span class="meta-value">{{ formatDate(issue.updatedAt) }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="history-section">
+          <h4 class="section-title">History</h4>
+          
+          @if (isLoadingHistory()) {
+            <div class="loading-state">
+              <p>Loading history...</p>
+            </div>
+          } @else if (errorMessage()) {
+            <div class="error-state">
+              <p>{{ errorMessage() }}</p>
+            </div>
+          } @else if (history.length === 0) {
+            <div class="empty-state">
+              <p>No history available for this issue.</p>
+            </div>
+          } @else {
+            <div class="history-timeline">
+              @for (item of history; track item.id) {
+                <div class="history-item">
+                  <div class="history-item-header">
+                    <div class="history-user-info">
+                      <div class="user-avatar" [style.background-color]="'#3b82f6'">
+                        {{ getUserInitials(item.changedByUser?.username) }}
+                      </div>
+                      <div class="history-user-details">
+                        <span class="history-user-name">{{ item.changedByUser?.username || 'Unknown' }}</span>
+                        <span class="history-timestamp">{{ formatDate(item.changedAt) }}</span>
+                      </div>
+                    </div>
+                    <span class="history-change-type">{{ item.changeType.replace('_', ' ') }}</span>
+                  </div>
+                  <div class="history-change-description">
+                    {{ formatChangeDescription(item) }}
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <div class="modal-footer">
+      <button
+        type="button"
+        class="btn-close"
+        (click)="onCancel()"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+

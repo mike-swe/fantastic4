@@ -1,5 +1,7 @@
 package com.revature.fantastic4.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.revature.fantastic4.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -38,6 +40,7 @@ public class User {
     @Column(name = "role", nullable = false, length = 20)
     private Role role;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProjectAssignment> assignments = new HashSet<>();
 }

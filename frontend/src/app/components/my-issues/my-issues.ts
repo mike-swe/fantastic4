@@ -4,20 +4,18 @@ import { FormsModule } from '@angular/forms';
 import { Role } from '../../enum/role';
 import { Issues } from '../../interfaces/issues';
 import { User } from '../../interfaces/user';
-import { Project } from '../../interfaces/project';
 import { IssueService } from '../../services/issue-service';
-import { ProjectService } from '../../services/project-service';
 import { AuthService } from '../../services/auth-service';
 import { NewIssueModal } from '../new-issue-modal/new-issue-modal';
 import { IssueDetailModal } from '../issue-detail-modal/issue-detail-modal';
 
 @Component({
-  selector: 'app-issues',
+  selector: 'app-my-issues',
   imports: [CommonModule, FormsModule, NewIssueModal, IssueDetailModal],
-  templateUrl: './issues.html',
-  styleUrl: './issues.css',
+  templateUrl: './my-issues.html',
+  styleUrl: './my-issues.css',
 })
-export class IssuesComponent implements OnInit {
+export class MyIssues implements OnInit {
   issues: Issues[] = [];
   filteredIssues: Issues[] = [];
   currentUser: User | null = null;
@@ -34,9 +32,10 @@ export class IssuesComponent implements OnInit {
   statusOptions = ['ALL', 'OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'];
   severityOptions = ['ALL', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'];
 
+  updatingStatus: { [issueId: string]: boolean } = {};
+
   constructor(
     private issueService: IssueService,
-    private projectService: ProjectService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -49,69 +48,52 @@ export class IssuesComponent implements OnInit {
     const token = this.authService.getToken();
     
     if (!token) {
-      console.warn('Issues - No token found');
+      console.warn('MyIssues - No token found');
       return;
     }
 
     if (!this.authService.isAuthenticated()) {
-      console.warn('Issues - User not authenticated');
+      console.warn('MyIssues - User not authenticated');
       return;
     }
 
     this.currentUser = this.authService.getCurrentUser();
     
     if (!this.currentUser) {
-      console.warn('Issues - Could not get current user');
+      console.warn('MyIssues - Could not get current user');
       return;
     }
 
     this.userRole = this.currentUser.role ?? null;
     
-    console.log('Issues - Current User:', this.currentUser);
-    console.log('Issues - User Role:', this.userRole);
+    console.log('MyIssues - Current User:', this.currentUser);
+    console.log('MyIssues - User Role:', this.userRole);
     
-    if (this.currentUser && this.userRole !== null && this.userRole !== undefined) {
+    if (this.userRole === Role.TESTER && this.currentUser.id) {
       this.loadIssues();
+    } else {
+      console.warn('MyIssues - Only TESTER can access this page');
     }
   }
 
   loadIssues(): void {
-    if (this.userRole === null || this.userRole === undefined) {
-      console.warn('Issues - No user role set, cannot load issues');
+    if (!this.currentUser?.id) {
+      console.warn('MyIssues - No user ID available');
       return;
     }
 
-    if (this.userRole === Role.ADMIN) {
-      this.issueService.getAllIssues().subscribe({
-        next: (issues) => {
-          this.issues = issues;
-          this.applyFilters();
-          console.log('Issues - Loaded issues:', issues.length);
-          this.cdr.detectChanges();
-        },
-        error: (error) => {
-          console.error('Issues - Error loading issues:', error);
-        }
-      });
-    } else if (this.userRole === Role.TESTER || this.userRole === Role.DEVELOPER) {
-      if (this.currentUser?.id) {
-        this.issueService.getIssuesByUser(this.currentUser.id).subscribe({
-          next: (issues) => {
-            this.issues = issues;
-            this.applyFilters();
-            console.log('Issues - Loaded user issues:', issues.length);
-            this.cdr.detectChanges();
-          },
-          error: (error) => {
-            console.error('Issues - Error loading user issues:', error);
-          }
-        });
-      } else {
-        console.warn('Issues - No user ID available');
+    this.issueService.getIssuesByUser(this.currentUser.id).subscribe({
+      next: (issues) => {
+        this.issues = issues;
+        this.applyFilters();
+        console.log('MyIssues - Loaded user issues:', issues.length);
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('MyIssues - Error loading user issues:', error);
       }
-    }
+    });
   }
-
 
   applyFilters(): void {
     this.filteredIssues = this.issues.filter(issue => {
@@ -154,14 +136,34 @@ export class IssuesComponent implements OnInit {
     this.showModal = false;
   }
 
-  openIssueDetail(issue: Issues): void {
-    this.selectedIssue = issue;
-    this.showDetailModal = true;
+  updateIssueStatus(issue: Issues, newStatus: 'OPEN' | 'CLOSED'): void {
+    if (this.updatingStatus[issue.id]) {
+      return;
+    }
+
+    this.updatingStatus[issue.id] = true;
+
+    this.issueService.updateIssueStatus(issue.id, newStatus).subscribe({
+      next: (updatedIssue) => {
+        const index = this.issues.findIndex(i => i.id === issue.id);
+        if (index !== -1) {
+          this.issues[index] = updatedIssue;
+          this.applyFilters();
+        }
+        this.updatingStatus[issue.id] = false;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('MyIssues - Error updating issue status:', error);
+        this.updatingStatus[issue.id] = false;
+        this.cdr.detectChanges();
+        alert(error.error?.message || 'Failed to update issue status');
+      }
+    });
   }
 
-  onDetailModalClose(): void {
-    this.showDetailModal = false;
-    this.selectedIssue = null;
+  canUpdateStatus(issue: Issues): boolean {
+    return true;
   }
 
   formatIssueId(id: string): string {
@@ -217,6 +219,16 @@ export class IssuesComponent implements OnInit {
 
   getPriorityColor(priority: string): string {
     return this.getSeverityColor(priority);
+  }
+
+  openIssueDetail(issue: Issues): void {
+    this.selectedIssue = issue;
+    this.showDetailModal = true;
+  }
+
+  onDetailModalClose(): void {
+    this.showDetailModal = false;
+    this.selectedIssue = null;
   }
 }
 
