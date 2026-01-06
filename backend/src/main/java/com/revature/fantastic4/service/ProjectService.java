@@ -57,6 +57,7 @@ public class ProjectService {
             project.setStatus(status);
         }
         
+        project.setUpdatedAt(Instant.now());
         return projectRepository.save(project);
     }
 
@@ -71,6 +72,13 @@ public class ProjectService {
 
     public List<Project> getAllProjectsByUser(User user) {
         return projectRepository.findByCreatedBy(user);
+    }
+
+    public void deleteProject(UUID projectId, User adminUser) {
+        validateAdminRole(adminUser);
+        
+        Project project = getProjectById(projectId);
+        projectRepository.delete(project);
     }
 
     private void validateAdminRole(User user) {
