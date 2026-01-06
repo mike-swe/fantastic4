@@ -11,6 +11,7 @@ import { AuthService } from '../../services/auth-service';
 })
 export class CreateAccount {
 
+emailInput = '';
 usernameInput = '';
 passwordInput = '';
 
