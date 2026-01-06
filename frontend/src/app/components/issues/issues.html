@@ -52,7 +52,7 @@
   <div class="issues-content">
     <div class="issues-grid">
       @for (issue of filteredIssues; track issue.id) {
-        <div class="issue-card">
+        <div class="issue-card" (click)="openIssueDetail(issue)">
           <div class="issue-header">
             <span class="issue-id">{{ formatIssueId(issue.id) }}</span>
             <div class="issue-tags">
@@ -117,6 +117,13 @@
       (close)="onModalClose()"
       (issueCreated)="onIssueCreated($event)"
     ></app-new-issue-modal>
+  }
+
+  @if (showDetailModal && selectedIssue) {
+    <app-issue-detail-modal
+      [issue]="selectedIssue"
+      (close)="onDetailModalClose()"
+    ></app-issue-detail-modal>
   }
 </div>
 
