@@ -1,3 +1,4 @@
-
-Create mock authservice to prep for jwt 
-setup authguard
+enter key to press button
+redirect from login page if logged in
+create account page
+create account back end
