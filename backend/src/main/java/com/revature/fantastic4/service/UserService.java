@@ -20,14 +20,17 @@ public class UserService {
     private final UserRepository userRepository;
     private final ProjectAssignmentRepository projectAssignmentRepository;
     private final ProjectService projectService;
+    private final AuditService auditService;
 
     public UserService(
         UserRepository userRepository,
         ProjectAssignmentRepository projectAssignmentRepository,
-        ProjectService projectService) {
+        ProjectService projectService,
+        AuditService auditService) {
         this.userRepository = userRepository;
         this.projectAssignmentRepository = projectAssignmentRepository;
         this.projectService = projectService;
+        this.auditService = auditService;
     }
 
     public ProjectAssignment addUserToProject(UUID projectId, UUID userId, User adminUser) {
@@ -48,7 +51,18 @@ public class UserService {
         assignment.setUser(userToAssign);
         assignment.setAssignedAt(Instant.now());
 
-        return projectAssignmentRepository.save(assignment);
+        ProjectAssignment savedAssignment = projectAssignmentRepository.save(assignment);
+        
+        try {
+            String details = String.format("User '%s' (role: %s) assigned to project '%s'", 
+                userToAssign.getUsername(), userToAssign.getRole(), project.getName());
+            auditService.log(adminUser.getId(), "USER_ASSIGNED_TO_PROJECT", "PROJECT_ASSIGNMENT", 
+                savedAssignment.getId(), details);
+        } catch (Exception e) {
+            System.err.println("Failed to create audit log: " + e.getMessage());
+        }
+        
+        return savedAssignment;
     }
 
     private void validateAdminRole(User user) {
@@ -104,8 +118,7 @@ public class UserService {
                 .map(ProjectAssignment::getUser)
                 .collect(Collectors.toList());
     }
-
-    public User createNewUser(RegisterRequest dto) {
+        public User createNewUser(RegisterRequest dto) {
         // 1. Create a new User Entity
         User user = new User();
 
