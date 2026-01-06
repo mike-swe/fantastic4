@@ -28,9 +28,17 @@ export class MyIssues implements OnInit {
   searchQuery = '';
   selectedStatus: string = 'ALL';
   selectedSeverity: string = 'ALL';
+  selectedPriority: string = 'ALL';
+  selectedAssignedTo: string = 'ALL';
+  selectedDateRange: string = 'ALL';
+  customFromDate: string = '';
+  customToDate: string = '';
 
   statusOptions = ['ALL', 'OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'];
   severityOptions = ['ALL', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'];
+  priorityOptions = ['ALL', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'];
+  dateRangeOptions = ['ALL', 'TODAY', 'THIS_WEEK', 'THIS_MONTH', 'LAST_30_DAYS', 'CUSTOM'];
+  assignedUsers: User[] = [];
 
   updatingStatus: { [issueId: string]: boolean } = {};
 
@@ -85,6 +93,7 @@ export class MyIssues implements OnInit {
     this.issueService.getIssuesByUser(this.currentUser.id).subscribe({
       next: (issues) => {
         this.issues = issues;
+        this.extractAssignedUsers();
         this.applyFilters();
         console.log('MyIssues - Loaded user issues:', issues.length);
         this.cdr.detectChanges();
@@ -99,7 +108,8 @@ export class MyIssues implements OnInit {
     this.filteredIssues = this.issues.filter(issue => {
       const matchesSearch = !this.searchQuery || 
         issue.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        this.formatIssueId(issue.id).toLowerCase().includes(this.searchQuery.toLowerCase());
+        this.formatIssueId(issue.id).toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        issue.project?.name?.toLowerCase().includes(this.searchQuery.toLowerCase());
 
       const matchesStatus = this.selectedStatus === 'ALL' || 
         issue.status === this.selectedStatus;
@@ -107,7 +117,16 @@ export class MyIssues implements OnInit {
       const matchesSeverity = this.selectedSeverity === 'ALL' || 
         issue.severity === this.selectedSeverity;
 
-      return matchesSearch && matchesStatus && matchesSeverity;
+      const matchesPriority = this.selectedPriority === 'ALL' || 
+        issue.priority === this.selectedPriority;
+
+      const matchesAssignedTo = this.selectedAssignedTo === 'ALL' || 
+        (this.selectedAssignedTo === 'UNASSIGNED' && !issue.assignedTo) ||
+        (issue.assignedTo?.id === this.selectedAssignedTo);
+
+      const matchesDateRange = this.matchesDateRange(issue);
+
+      return matchesSearch && matchesStatus && matchesSeverity && matchesPriority && matchesAssignedTo && matchesDateRange;
     });
   }
 
@@ -121,6 +140,64 @@ export class MyIssues implements OnInit {
 
   onSeverityChange(): void {
     this.applyFilters();
+  }
+
+  onPriorityChange(): void {
+    this.applyFilters();
+  }
+
+  onAssignedToChange(): void {
+    this.applyFilters();
+  }
+
+  onDateRangeChange(): void {
+    this.applyFilters();
+  }
+
+  matchesDateRange(issue: Issues): boolean {
+    if (this.selectedDateRange === 'ALL') {
+      return true;
+    }
+
+    const issueDate = issue.updatedAt ? new Date(issue.updatedAt) : new Date(issue.createdAt);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    switch (this.selectedDateRange) {
+      case 'TODAY':
+        return issueDate >= today;
+      case 'THIS_WEEK':
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - today.getDay());
+        return issueDate >= weekStart;
+      case 'THIS_MONTH':
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        return issueDate >= monthStart;
+      case 'LAST_30_DAYS':
+        const thirtyDaysAgo = new Date(today);
+        thirtyDaysAgo.setDate(today.getDate() - 30);
+        return issueDate >= thirtyDaysAgo;
+      case 'CUSTOM':
+        if (!this.customFromDate || !this.customToDate) {
+          return true;
+        }
+        const fromDate = new Date(this.customFromDate);
+        const toDate = new Date(this.customToDate);
+        toDate.setHours(23, 59, 59, 999);
+        return issueDate >= fromDate && issueDate <= toDate;
+      default:
+        return true;
+    }
+  }
+
+  extractAssignedUsers(): void {
+    const userMap = new Map<string, User>();
+    this.issues.forEach(issue => {
+      if (issue.assignedTo) {
+        userMap.set(issue.assignedTo.id, issue.assignedTo);
+      }
+    });
+    this.assignedUsers = Array.from(userMap.values());
   }
 
   createNewIssue(): void {
