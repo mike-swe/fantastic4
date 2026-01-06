@@ -1,8 +1,16 @@
 <div class="parent">
   <h1>create account</h1>
+  <input type="text" [(ngModel)]="emailInput" placeholder="Email">
   <input type="text" [(ngModel)]="usernameInput" placeholder="Username">
   <input type="password" [(ngModel)]="passwordInput" placeholder="Password">
-  <button>Create</button>
+
+  <select [(ngModel)] = "roleInput" name = "role" id = "role">
+    <option value = "DEVELOPER"> dev</option>
+    <option value = "ADMIN"> admin</option>
+    <option value = "TESTER"> tester</option>
+  </select>
+
+  <button (click) = "createUser()">create</button>
 
   
   <button routerLink="/login">back</button>

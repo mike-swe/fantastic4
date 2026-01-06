@@ -1,5 +1,6 @@
 package com.revature.fantastic4.service;
 
+import com.revature.fantastic4.dto.RegisterRequest;
 import com.revature.fantastic4.entity.Project;
 import com.revature.fantastic4.entity.ProjectAssignment;
 import com.revature.fantastic4.entity.User;
@@ -19,17 +20,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final ProjectAssignmentRepository projectAssignmentRepository;
     private final ProjectService projectService;
-    private final AuditService auditService;
 
     public UserService(
         UserRepository userRepository,
         ProjectAssignmentRepository projectAssignmentRepository,
-        ProjectService projectService,
-        AuditService auditService) {
+        ProjectService projectService) {
         this.userRepository = userRepository;
         this.projectAssignmentRepository = projectAssignmentRepository;
         this.projectService = projectService;
-        this.auditService = auditService;
     }
 
     public ProjectAssignment addUserToProject(UUID projectId, UUID userId, User adminUser) {
@@ -50,18 +48,7 @@ public class UserService {
         assignment.setUser(userToAssign);
         assignment.setAssignedAt(Instant.now());
 
-        ProjectAssignment savedAssignment = projectAssignmentRepository.save(assignment);
-        
-        try {
-            String details = String.format("User '%s' (role: %s) assigned to project '%s'", 
-                userToAssign.getUsername(), userToAssign.getRole(), project.getName());
-            auditService.log(adminUser.getId(), "USER_ASSIGNED_TO_PROJECT", "PROJECT_ASSIGNMENT", 
-                savedAssignment.getId(), details);
-        } catch (Exception e) {
-            System.err.println("Failed to create audit log: " + e.getMessage());
-        }
-        
-        return savedAssignment;
+        return projectAssignmentRepository.save(assignment);
     }
 
     private void validateAdminRole(User user) {
@@ -117,5 +104,18 @@ public class UserService {
                 .map(ProjectAssignment::getUser)
                 .collect(Collectors.toList());
     }
-}
 
+    public User createNewUser(RegisterRequest dto) {
+        // 1. Create a new User Entity
+        User user = new User();
+
+        // 2. Map fields from DTO to Entity
+        user.setUsername(dto.getUsername());
+        user.setPassword(dto.getPassword());
+        user.setEmail(dto.getEmail());
+        user.setRole(Role.valueOf(dto.getRole()));
+
+        // 4. Save to Database
+        return userRepository.save(user);
+    }
+}
