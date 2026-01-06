@@ -50,7 +50,7 @@ export class NewProjectModal implements OnChanges {
         id: this.project.id,
         name: trimmedName,
         description: trimmedDescription || undefined,
-        status: this.project.status, // Keep existing status
+        status: this.project.status,
       };
 
       this.projectService.updateProject(this.project.id, updatedProject as Project).subscribe({
