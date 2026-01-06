@@ -107,6 +107,106 @@
             </div>
           }
         </div>
+
+        <div class="comments-section">
+          <h4 class="section-title">Comments</h4>
+          
+          @if (isLoadingComments()) {
+            <div class="loading-state">
+              <p>Loading comments...</p>
+            </div>
+          } @else if (commentErrorMessage()) {
+            <div class="error-state">
+              <p>{{ commentErrorMessage() }}</p>
+            </div>
+          } @else if (comments.length === 0) {
+            <div class="empty-state">
+              <p>No comments yet. Be the first to comment!</p>
+            </div>
+          } @else {
+            <div class="comments-list">
+              @for (comment of comments; track comment.id) {
+                <div class="comment-item">
+                  <div class="comment-header">
+                    <div class="comment-user-info">
+                      <div class="user-avatar" [style.background-color]="'#3b82f6'">
+                        {{ getUserInitials(comment.author?.username) }}
+                      </div>
+                      <div class="comment-user-details">
+                        <span class="comment-user-name">{{ comment.author?.username || 'Unknown' }}</span>
+                        <span class="comment-timestamp">{{ formatDate(comment.createdAt) }}</span>
+                        @if (comment.updatedAt && comment.updatedAt !== comment.createdAt) {
+                          <span class="comment-edited">(edited)</span>
+                        }
+                      </div>
+                    </div>
+                    <div class="comment-actions">
+                      @if (editingCommentId === comment.id) {
+                        <button 
+                          class="btn-comment-action"
+                          (click)="updateComment(comment.id)"
+                        >
+                          Save
+                        </button>
+                        <button 
+                          class="btn-comment-action"
+                          (click)="cancelEditing()"
+                        >
+                          Cancel
+                        </button>
+                      } @else {
+                        @if (canEditComment(comment)) {
+                          <button 
+                            class="btn-comment-action"
+                            (click)="startEditing(comment)"
+                          >
+                            Edit
+                          </button>
+                        }
+                        @if (canDeleteComment(comment)) {
+                          <button 
+                            class="btn-comment-action btn-delete"
+                            (click)="deleteComment(comment.id)"
+                          >
+                            Delete
+                          </button>
+                        }
+                      }
+                    </div>
+                  </div>
+                  @if (editingCommentId === comment.id) {
+                    <textarea
+                      class="comment-edit-textarea"
+                      [(ngModel)]="editingCommentText"
+                      rows="3"
+                    ></textarea>
+                  } @else {
+                    <div class="comment-content">
+                      {{ comment.content }}
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+          <div class="comment-form">
+            <h5 class="comment-form-title">Add a comment</h5>
+            <textarea
+              class="comment-input"
+              [(ngModel)]="newCommentText"
+              placeholder="Write a comment..."
+              rows="3"
+            ></textarea>
+            <button
+              class="btn-comment-submit"
+              (click)="createComment()"
+              [disabled]="!newCommentText.trim()"
+            >
+              Post Comment
+            </button>
+          </div>
+        </div>
       </div>
     }
 

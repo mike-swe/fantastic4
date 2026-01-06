@@ -1,10 +1,12 @@
 package com.revature.fantastic4.controller;
 
+import com.revature.fantastic4.entity.Comment;
 import com.revature.fantastic4.entity.Issue;
 import com.revature.fantastic4.entity.IssueHistory;
 import com.revature.fantastic4.entity.User;
 import com.revature.fantastic4.enums.IssueStatus;
 import com.revature.fantastic4.enums.Role;
+import com.revature.fantastic4.service.CommentService;
 import com.revature.fantastic4.service.IssueService;
 import com.revature.fantastic4.service.UserService;
 import com.revature.fantastic4.util.JwtUtil;
@@ -24,6 +26,7 @@ public class IssueController {
 
     private final IssueService issueService;
     private final UserService userService;
+    private final CommentService commentService;
     private final JwtUtil jwtUtil;
 
     @PostMapping
@@ -132,6 +135,62 @@ public class IssueController {
     public ResponseEntity<List<IssueHistory>> getIssueHistory(@PathVariable UUID issueId){
         List<IssueHistory>history = issueService.getIssueHistory(issueId);
         return ResponseEntity.ok(history);
+    }
+
+    @PostMapping("/{issueId}/comments")
+    public ResponseEntity<Comment> createComment(
+            @PathVariable UUID issueId,
+            @RequestBody Map<String, String> requestBody,
+            @RequestHeader("Authorization") String authHeader) {
+        String token = jwtUtil.extractTokenFromHeader(authHeader);
+        UUID userId = jwtUtil.extractId(token);
+        User user = userService.getUserById(userId);
+        
+        String content = requestBody.get("content");
+        if (content == null) {
+            throw new IllegalArgumentException("Content is required in request body");
+        }
+        
+        Comment createdComment = commentService.createComment(issueId, content, user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdComment);
+    }
+
+    @GetMapping("/{issueId}/comments")
+    public ResponseEntity<List<Comment>> getCommentsByIssue(@PathVariable UUID issueId) {
+        List<Comment> comments = commentService.getCommentsByIssue(issueId);
+        return ResponseEntity.ok(comments);
+    }
+
+    @PutMapping("/{issueId}/comments/{commentId}")
+    public ResponseEntity<Comment> updateComment(
+            @PathVariable UUID issueId,
+            @PathVariable UUID commentId,
+            @RequestBody Map<String, String> requestBody,
+            @RequestHeader("Authorization") String authHeader) {
+        String token = jwtUtil.extractTokenFromHeader(authHeader);
+        UUID userId = jwtUtil.extractId(token);
+        User user = userService.getUserById(userId);
+        
+        String content = requestBody.get("content");
+        if (content == null) {
+            throw new IllegalArgumentException("Content is required in request body");
+        }
+        
+        Comment updatedComment = commentService.updateComment(commentId, content, user);
+        return ResponseEntity.ok(updatedComment);
+    }
+
+    @DeleteMapping("/{issueId}/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment(
+            @PathVariable UUID issueId,
+            @PathVariable UUID commentId,
+            @RequestHeader("Authorization") String authHeader) {
+        String token = jwtUtil.extractTokenFromHeader(authHeader);
+        UUID userId = jwtUtil.extractId(token);
+        User user = userService.getUserById(userId);
+        
+        commentService.deleteComment(commentId, user);
+        return ResponseEntity.noContent().build();
     }
 
 }

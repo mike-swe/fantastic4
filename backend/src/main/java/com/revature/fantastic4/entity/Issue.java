@@ -1,5 +1,6 @@
 package com.revature.fantastic4.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.revature.fantastic4.enums.IssueStatus;
 import com.revature.fantastic4.enums.Priority;
 import com.revature.fantastic4.enums.Severity;
@@ -7,6 +8,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -15,6 +18,10 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Table(name = "issues")
+@NamedEntityGraph(
+    name = "Issue.comments",
+    attributeNodes = @NamedAttributeNode("comments")
+)
 public class Issue {
 
     @Id
@@ -63,6 +70,8 @@ public class Issue {
 
     @Column(name = "closed_at", nullable = true)
     private Instant closedAt;
-//    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private Set<Comment> comments = new HashSet<>();
+    
+    @JsonIgnore
+    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<Comment> comments = new HashSet<>();
 }

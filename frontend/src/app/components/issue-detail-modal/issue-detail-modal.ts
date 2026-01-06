@@ -1,12 +1,17 @@
 import { Component, Input, OnInit, Output, EventEmitter, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Issues } from '../../interfaces/issues';
 import { IssueHistory } from '../../interfaces/issue-history';
+import { Comment } from '../../interfaces/comment';
 import { IssueService } from '../../services/issue-service';
+import { CommentService } from '../../services/comment-service';
+import { AuthService } from '../../services/auth-service';
+import { Role } from '../../enum/role';
 
 @Component({
   selector: 'app-issue-detail-modal',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './issue-detail-modal.html',
   styleUrl: './issue-detail-modal.css',
 })
@@ -18,11 +23,23 @@ export class IssueDetailModal implements OnInit {
   isLoadingHistory = signal(false);
   errorMessage = signal('');
 
-  constructor(private issueService: IssueService) {}
+  comments: Comment[] = [];
+  isLoadingComments = signal(false);
+  commentErrorMessage = signal('');
+  newCommentText = '';
+  editingCommentId: string | null = null;
+  editingCommentText = '';
+
+  constructor(
+    private issueService: IssueService,
+    private commentService: CommentService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     if (this.issue) {
       this.loadHistory();
+      this.loadComments();
     }
   }
 
@@ -141,6 +158,114 @@ export class IssueDetailModal implements OnInit {
       return (parts[0][0] + parts[1][0]).toUpperCase();
     }
     return username.substring(0, 2).toUpperCase();
+  }
+
+  loadComments(): void {
+    if (!this.issue?.id) {
+      return;
+    }
+
+    this.isLoadingComments.set(true);
+    this.commentErrorMessage.set('');
+
+    this.commentService.getCommentsByIssue(this.issue.id).subscribe({
+      next: (comments) => {
+        this.comments = comments;
+        this.isLoadingComments.set(false);
+      },
+      error: (error) => {
+        console.error('Error loading comments:', error);
+        this.commentErrorMessage.set('Failed to load comments');
+        this.isLoadingComments.set(false);
+      }
+    });
+  }
+
+  createComment(): void {
+    if (!this.issue?.id || !this.newCommentText.trim()) {
+      return;
+    }
+
+    this.commentErrorMessage.set('');
+    const content = this.newCommentText.trim();
+
+    this.commentService.createComment(this.issue.id, content).subscribe({
+      next: (comment) => {
+        this.comments.push(comment);
+        this.newCommentText = '';
+      },
+      error: (error) => {
+        console.error('Error creating comment:', error);
+        this.commentErrorMessage.set(error.error?.message || 'Failed to create comment');
+      }
+    });
+  }
+
+  startEditing(comment: Comment): void {
+    this.editingCommentId = comment.id;
+    this.editingCommentText = comment.content;
+  }
+
+  cancelEditing(): void {
+    this.editingCommentId = null;
+    this.editingCommentText = '';
+  }
+
+  updateComment(commentId: string): void {
+    if (!this.issue?.id || !this.editingCommentText.trim()) {
+      return;
+    }
+
+    this.commentErrorMessage.set('');
+    const content = this.editingCommentText.trim();
+
+    this.commentService.updateComment(this.issue.id, commentId, content).subscribe({
+      next: (updatedComment) => {
+        const index = this.comments.findIndex(c => c.id === commentId);
+        if (index !== -1) {
+          this.comments[index] = updatedComment;
+        }
+        this.cancelEditing();
+      },
+      error: (error) => {
+        console.error('Error updating comment:', error);
+        this.commentErrorMessage.set(error.error?.message || 'Failed to update comment');
+      }
+    });
+  }
+
+  deleteComment(commentId: string): void {
+    if (!this.issue?.id) {
+      return;
+    }
+
+    if (!confirm('Are you sure you want to delete this comment?')) {
+      return;
+    }
+
+    this.commentErrorMessage.set('');
+
+    this.commentService.deleteComment(this.issue.id, commentId).subscribe({
+      next: () => {
+        this.comments = this.comments.filter(c => c.id !== commentId);
+      },
+      error: (error) => {
+        console.error('Error deleting comment:', error);
+        this.commentErrorMessage.set(error.error?.message || 'Failed to delete comment');
+      }
+    });
+  }
+
+  canEditComment(comment: Comment): boolean {
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) return false;
+    return comment.author.id === currentUser.id;
+  }
+
+  canDeleteComment(comment: Comment): boolean {
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) return false;
+    return comment.author.id === currentUser.id || currentUser.role === Role.ADMIN;
   }
 }
 
