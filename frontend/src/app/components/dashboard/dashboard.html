@@ -1,10 +1,9 @@
 <div class="dashboard">
-  <h1 class="dashboard-title">Welcome, Admin!</h1>
+  <h1 class="dashboard-title">Welcome, {{ currentUser?.username || 'User' }}!</h1>
 
   <div class="section">
     <div class="section-header">
       <h2>All Projects</h2>
-      <button class="btn-primary">+ New Project</button>
     </div>
     <div class="projects-grid">
       @for (project of projects; track project.id) {
