@@ -1,0 +1,205 @@
+.audit-logs-page {
+  color: #000000;
+  padding: 2rem;
+}
+
+.audit-logs-header {
+  margin-bottom: 2rem;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+.header-title-section {
+  flex: 1;
+}
+
+.audit-logs-title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: #000000;
+}
+
+.audit-logs-subtitle {
+  font-size: 1rem;
+  color: #666666;
+  margin: 0;
+}
+
+.filters-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.filters {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 200px;
+}
+
+.filter-group label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333333;
+}
+
+.filter-select {
+  padding: 0.5rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background-color: #ffffff;
+  color: #000000;
+  cursor: pointer;
+}
+
+.filter-select:hover {
+  border-color: #999999;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.audit-logs-content {
+  margin-top: 2rem;
+}
+
+.loading-state,
+.error-state,
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: #666666;
+}
+
+.error-state {
+  color: #dc2626;
+  background-color: #fee2e2;
+  border-radius: 8px;
+  border: 1px solid #fecaca;
+}
+
+.audit-logs-table-container {
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  overflow-x: auto;
+}
+
+.audit-logs-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.audit-logs-table thead {
+  background-color: #f9fafb;
+}
+
+.audit-logs-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #374151;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.audit-logs-table tbody tr {
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.2s;
+}
+
+.audit-logs-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.audit-logs-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.audit-logs-table td {
+  padding: 1rem;
+  font-size: 0.9rem;
+  color: #1f2937;
+}
+
+.timestamp-cell {
+  white-space: nowrap;
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.actor-cell {
+  font-weight: 500;
+}
+
+.action-cell {
+  white-space: nowrap;
+}
+
+.action-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background-color: #3b82f6;
+  color: #ffffff;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.entity-type-cell {
+  text-transform: capitalize;
+}
+
+.entity-id-cell {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.details-cell {
+  max-width: 400px;
+  word-wrap: break-word;
+  color: #4b5563;
+}
+
+@media (max-width: 768px) {
+  .audit-logs-page {
+    padding: 1rem;
+  }
+
+  .filters {
+    flex-direction: column;
+  }
+
+  .filter-group {
+    min-width: 100%;
+  }
+
+  .audit-logs-table-container {
+    overflow-x: scroll;
+  }
+
+  .audit-logs-table {
+    min-width: 800px;
+  }
+}
+

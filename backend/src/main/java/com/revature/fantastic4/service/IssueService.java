@@ -28,18 +28,21 @@ public class IssueService {
     private final ProjectAssignmentRepository projectAssignmentRepository;
     private final UserService userService;
     private final IssueHistoryRepository issueHistoryRepository;
+    private final AuditService auditService;
     
     public IssueService(
             IssueRepository issueRepository,
             ProjectService projectService,
             ProjectAssignmentRepository projectAssignmentRepository,
             UserService userService,
-            IssueHistoryRepository issueHistoryRepository) {
+            IssueHistoryRepository issueHistoryRepository,
+            AuditService auditService) {
         this.issueRepository = issueRepository;
         this.projectService = projectService;
         this.projectAssignmentRepository = projectAssignmentRepository;
         this.userService = userService;
         this.issueHistoryRepository = issueHistoryRepository;
+        this.auditService = auditService;
     }
 
     private void validateTesterRole(User user) {
@@ -127,6 +130,14 @@ public class IssueService {
         createHistoryRecord(savedIssue, tester, ChangeType.CREATED, null, null, 
                            "Issue created with status: " + IssueStatus.OPEN);
         
+        try {
+            String details = String.format("Issue created: title='%s', severity=%s, priority=%s, status=%s", 
+                savedIssue.getTitle(), savedIssue.getSeverity(), savedIssue.getPriority(), savedIssue.getStatus());
+            auditService.log(tester.getId(), "ISSUE_CREATED", "ISSUE", savedIssue.getId(), details);
+        } catch (Exception e) {
+            System.err.println("Failed to create audit log: " + e.getMessage());
+        }
+        
         return savedIssue;
     }
 
@@ -162,6 +173,13 @@ public class IssueService {
         if (!oldStatus.equals(newStatus)) {
             createHistoryRecord(savedIssue, user, ChangeType.STATUS_CHANGE, IssueFieldName.STATUS,
                                oldStatus.toString(), newStatus.toString());
+            
+            try {
+                String details = String.format("Status changed: %s -> %s", oldStatus, newStatus);
+                auditService.log(user.getId(), "ISSUE_STATUS_CHANGED", "ISSUE", savedIssue.getId(), details);
+            } catch (Exception e) {
+                System.err.println("Failed to create audit log: " + e.getMessage());
+            }
         }
         
         if (oldAssignedTo == null && issue.getAssignedTo() != null) {
@@ -214,24 +232,43 @@ public class IssueService {
         issue.setUpdatedAt(Instant.now());
         Issue savedIssue = issueRepository.save(issue);
         
+        boolean hasChanges = false;
+        StringBuilder changeDetails = new StringBuilder();
+        
         if (title != null && !oldTitle.equals(title.trim())) {
             createHistoryRecord(savedIssue, user, ChangeType.FIELD_UPDATE, IssueFieldName.TITLE,
                                oldTitle, title.trim());
+            hasChanges = true;
+            changeDetails.append("title: ").append(oldTitle).append(" -> ").append(title.trim()).append("; ");
         }
         
         if (description != null && !oldDescription.equals(description.trim())) {
             createHistoryRecord(savedIssue, user, ChangeType.FIELD_UPDATE, IssueFieldName.DESCRIPTION,
                                oldDescription, description.trim());
+            hasChanges = true;
+            changeDetails.append("description updated; ");
         }
         
         if (severity != null && !oldSeverity.equals(severity)) {
             createHistoryRecord(savedIssue, user, ChangeType.FIELD_UPDATE, IssueFieldName.SEVERITY,
                                oldSeverity.toString(), severity.toString());
+            hasChanges = true;
+            changeDetails.append("severity: ").append(oldSeverity).append(" -> ").append(severity).append("; ");
         }
         
         if (priority != null && !oldPriority.equals(priority)) {
             createHistoryRecord(savedIssue, user, ChangeType.FIELD_UPDATE, IssueFieldName.PRIORITY,
                                oldPriority.toString(), priority.toString());
+            hasChanges = true;
+            changeDetails.append("priority: ").append(oldPriority).append(" -> ").append(priority).append("; ");
+        }
+        
+        if (hasChanges) {
+            try {
+                auditService.log(user.getId(), "ISSUE_UPDATED", "ISSUE", savedIssue.getId(), changeDetails.toString());
+            } catch (Exception e) {
+                System.err.println("Failed to create audit log: " + e.getMessage());
+            }
         }
         
         return savedIssue;

@@ -10,6 +10,7 @@ import { AssignProject } from './components/assign-project/assign-project';
 import { MyProjects } from './components/my-projects/my-projects';
 import { MyIssues } from './components/my-issues/my-issues';
 import { AssignedIssues } from './components/assigned-issues/assigned-issues';
+import { AuditLogs } from './components/audit-logs/audit-logs';
 
 export const routes: Routes = [
   { path: 'login', component: LoginPage },
@@ -21,5 +22,6 @@ export const routes: Routes = [
   { path: 'my-projects', component: MyProjects, canActivate: [authGuardGuard] },
   { path: 'my-issues', component: MyIssues, canActivate: [authGuardGuard] },
   { path: 'assigned-issues', component: AssignedIssues, canActivate: [authGuardGuard] },
+  { path: 'audit-logs', component: AuditLogs, canActivate: [authGuardGuard] },
   { path: '', redirectTo: '/login', pathMatch: 'full' }
 ];

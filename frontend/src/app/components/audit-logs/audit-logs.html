@@ -1,0 +1,94 @@
+<div class="audit-logs-page">
+  <div class="audit-logs-header">
+    <div class="header-content">
+      <div class="header-title-section">
+        <h1 class="audit-logs-title">Audit Logs</h1>
+        <p class="audit-logs-subtitle">Track all system state changes and user actions</p>
+      </div>
+    </div>
+  </div>
+
+  @if (userRole !== Role.ADMIN) {
+    <div class="error-state">
+      <p>{{ errorMessage || 'Only Admin users can access audit logs' }}</p>
+    </div>
+  } @else {
+    <div class="filters-section">
+      <div class="filters">
+        <div class="filter-group">
+          <label for="entityType">Entity Type:</label>
+          <select 
+            id="entityType" 
+            [(ngModel)]="selectedEntityType" 
+            (change)="onEntityTypeChange()"
+            class="filter-select"
+          >
+            @for (type of entityTypes; track type) {
+              <option [value]="type">{{ type === 'ALL' ? 'All Types' : formatEntityType(type) }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="actor">Actor:</label>
+          <select 
+            id="actor" 
+            [(ngModel)]="selectedActorId" 
+            (change)="onActorChange()"
+            class="filter-select"
+          >
+            @for (actor of actorOptions; track actor.id) {
+              <option [value]="actor.id">{{ actor.username }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="audit-logs-content">
+      @if (isLoading) {
+        <div class="loading-state">
+          <p>Loading audit logs...</p>
+        </div>
+      } @else if (errorMessage) {
+        <div class="error-state">
+          <p>{{ errorMessage }}</p>
+        </div>
+      } @else if (filteredLogs.length === 0) {
+        <div class="empty-state">
+          <p>No audit logs found matching the selected filters.</p>
+        </div>
+      } @else {
+        <div class="audit-logs-table-container">
+          <table class="audit-logs-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Actor</th>
+                <th>Action</th>
+                <th>Entity Type</th>
+                <th>Entity ID</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (log of filteredLogs; track log.id) {
+                <tr>
+                  <td class="timestamp-cell">{{ formatTimestamp(log.timestamp) }}</td>
+                  <td class="actor-cell">{{ getActorUsername(log.actorUserId) }}</td>
+                  <td class="action-cell">
+                    <span class="action-badge">{{ formatAction(log.action) }}</span>
+                  </td>
+                  <td class="entity-type-cell">{{ formatEntityType(log.entityType) }}</td>
+                  <td class="entity-id-cell">{{ log.entityId.substring(0, 8) }}...</td>
+                  <td class="details-cell">{{ log.details }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+</div>
+

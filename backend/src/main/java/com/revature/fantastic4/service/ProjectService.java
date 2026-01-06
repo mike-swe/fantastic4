@@ -15,9 +15,11 @@ import java.util.UUID;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final AuditService auditService;
 
-    public ProjectService(ProjectRepository projectRepository) {
+    public ProjectService(ProjectRepository projectRepository, AuditService auditService) {
         this.projectRepository = projectRepository;
+        this.auditService = auditService;
     }
 
     public Project createProject(String name, String description, User adminUser) {
@@ -34,31 +36,63 @@ public class ProjectService {
         project.setCreatedBy(adminUser);
         project.setCreatedAt(Instant.now());
         
-        return projectRepository.save(project);
+        Project savedProject = projectRepository.save(project);
+        
+        try {
+            String details = String.format("Project created: name='%s', status=%s", savedProject.getName(), savedProject.getStatus());
+            auditService.log(adminUser.getId(), "PROJECT_CREATED", "PROJECT", savedProject.getId(), details);
+        } catch (Exception e) {
+            System.err.println("Failed to create audit log: " + e.getMessage());
+        }
+        
+        return savedProject;
     }
 
     public Project updateProject(UUID projectId, String name, String description, ProjectStatus status, User adminUser) {
         validateAdminRole(adminUser);
         
         Project project = getProjectById(projectId);
+        String oldName = project.getName();
+        ProjectStatus oldStatus = project.getStatus();
+        
+        boolean hasChanges = false;
+        StringBuilder changeDetails = new StringBuilder();
         
         if (name != null) {
             if (name.trim().isEmpty()) {
                 throw new IllegalArgumentException("Project name cannot be empty");
             }
-            project.setName(name.trim());
+            if (!oldName.equals(name.trim())) {
+                project.setName(name.trim());
+                hasChanges = true;
+                changeDetails.append("name: ").append(oldName).append(" -> ").append(name.trim()).append("; ");
+            }
         }
         
         if (description != null) {
             project.setDescription(description.trim());
+            hasChanges = true;
+            changeDetails.append("description updated; ");
         }
         
-        if (status != null) {
+        if (status != null && !oldStatus.equals(status)) {
             project.setStatus(status);
+            hasChanges = true;
+            changeDetails.append("status: ").append(oldStatus).append(" -> ").append(status).append("; ");
         }
         
         project.setUpdatedAt(Instant.now());
-        return projectRepository.save(project);
+        Project savedProject = projectRepository.save(project);
+        
+        if (hasChanges) {
+            try {
+                auditService.log(adminUser.getId(), "PROJECT_UPDATED", "PROJECT", savedProject.getId(), changeDetails.toString());
+            } catch (Exception e) {
+                System.err.println("Failed to create audit log: " + e.getMessage());
+            }
+        }
+        
+        return savedProject;
     }
 
     public Project getProjectById(UUID projectId) {
@@ -78,7 +112,17 @@ public class ProjectService {
         validateAdminRole(adminUser);
         
         Project project = getProjectById(projectId);
+        UUID projectIdToLog = project.getId();
+        String projectName = project.getName();
+        
         projectRepository.delete(project);
+        
+        try {
+            String details = String.format("Project deleted: name='%s'", projectName);
+            auditService.log(adminUser.getId(), "PROJECT_DELETED", "PROJECT", projectIdToLog, details);
+        } catch (Exception e) {
+            System.err.println("Failed to create audit log: " + e.getMessage());
+        }
     }
 
     private void validateAdminRole(User user) {
