@@ -7,10 +7,11 @@ import { User } from '../../interfaces/user';
 import { IssueService } from '../../services/issue-service';
 import { AuthService } from '../../services/auth-service';
 import { NewIssueModal } from '../new-issue-modal/new-issue-modal';
+import { IssueDetailModal } from '../issue-detail-modal/issue-detail-modal';
 
 @Component({
   selector: 'app-my-issues',
-  imports: [CommonModule, FormsModule, NewIssueModal],
+  imports: [CommonModule, FormsModule, NewIssueModal, IssueDetailModal],
   templateUrl: './my-issues.html',
   styleUrl: './my-issues.css',
 })
@@ -20,6 +21,8 @@ export class MyIssues implements OnInit {
   currentUser: User | null = null;
   userRole: Role | null = null;
   showModal = false;
+  showDetailModal = false;
+  selectedIssue: Issues | null = null;
   readonly Role = Role;
 
   searchQuery = '';
@@ -216,6 +219,16 @@ export class MyIssues implements OnInit {
 
   getPriorityColor(priority: string): string {
     return this.getSeverityColor(priority);
+  }
+
+  openIssueDetail(issue: Issues): void {
+    this.selectedIssue = issue;
+    this.showDetailModal = true;
+  }
+
+  onDetailModalClose(): void {
+    this.showDetailModal = false;
+    this.selectedIssue = null;
   }
 }
 

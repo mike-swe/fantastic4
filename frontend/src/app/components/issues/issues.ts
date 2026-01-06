@@ -9,10 +9,11 @@ import { IssueService } from '../../services/issue-service';
 import { ProjectService } from '../../services/project-service';
 import { AuthService } from '../../services/auth-service';
 import { NewIssueModal } from '../new-issue-modal/new-issue-modal';
+import { IssueDetailModal } from '../issue-detail-modal/issue-detail-modal';
 
 @Component({
   selector: 'app-issues',
-  imports: [CommonModule, FormsModule, NewIssueModal],
+  imports: [CommonModule, FormsModule, NewIssueModal, IssueDetailModal],
   templateUrl: './issues.html',
   styleUrl: './issues.css',
 })
@@ -22,14 +23,14 @@ export class IssuesComponent implements OnInit {
   currentUser: User | null = null;
   userRole: Role | null = null;
   showModal = false;
+  showDetailModal = false;
+  selectedIssue: Issues | null = null;
   readonly Role = Role;
 
-  // Search and filter
   searchQuery = '';
   selectedStatus: string = 'ALL';
   selectedSeverity: string = 'ALL';
 
-  // Status and Severity options
   statusOptions = ['ALL', 'OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'];
   severityOptions = ['ALL', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'];
 
@@ -114,16 +115,13 @@ export class IssuesComponent implements OnInit {
 
   applyFilters(): void {
     this.filteredIssues = this.issues.filter(issue => {
-      // Search filter
       const matchesSearch = !this.searchQuery || 
         issue.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
         this.formatIssueId(issue.id).toLowerCase().includes(this.searchQuery.toLowerCase());
 
-      // Status filter
       const matchesStatus = this.selectedStatus === 'ALL' || 
         issue.status === this.selectedStatus;
 
-      // Severity filter
       const matchesSeverity = this.selectedSeverity === 'ALL' || 
         issue.severity === this.selectedSeverity;
 
@@ -156,9 +154,17 @@ export class IssuesComponent implements OnInit {
     this.showModal = false;
   }
 
-  // Helper functions
+  openIssueDetail(issue: Issues): void {
+    this.selectedIssue = issue;
+    this.showDetailModal = true;
+  }
+
+  onDetailModalClose(): void {
+    this.showDetailModal = false;
+    this.selectedIssue = null;
+  }
+
   formatIssueId(id: string): string {
-    // Format UUID as ISS-XXXX (first 8 chars)
     if (!id) return 'ISS-0000';
     const shortId = id.replace(/-/g, '').substring(0, 8).toUpperCase();
     return `ISS-${shortId}`;
@@ -168,7 +174,7 @@ export class IssuesComponent implements OnInit {
     if (!dateString) return 'N/A';
     try {
       const date = new Date(dateString);
-      return date.toISOString().split('T')[0]; // YYYY-MM-DD format
+      return date.toISOString().split('T')[0];
     } catch {
       return 'N/A';
     }
@@ -191,26 +197,26 @@ export class IssuesComponent implements OnInit {
 
   getStatusColor(status: string): string {
     switch (status) {
-      case 'OPEN': return '#f97316'; // orange
-      case 'IN_PROGRESS': return '#3b82f6'; // blue
-      case 'RESOLVED': return '#10b981'; // green
-      case 'CLOSED': return '#6b7280'; // grey
+      case 'OPEN': return '#f97316';
+      case 'IN_PROGRESS': return '#3b82f6';
+      case 'RESOLVED': return '#10b981';
+      case 'CLOSED': return '#6b7280';
       default: return '#6b7280';
     }
   }
 
   getSeverityColor(severity: string): string {
     switch (severity) {
-      case 'LOW': return '#10b981'; // green
-      case 'MEDIUM': return '#f97316'; // orange
-      case 'HIGH': return '#ef4444'; // red
-      case 'CRITICAL': return '#dc2626'; // red
+      case 'LOW': return '#10b981';
+      case 'MEDIUM': return '#f97316';
+      case 'HIGH': return '#ef4444';
+      case 'CRITICAL': return '#dc2626';
       default: return '#6b7280';
     }
   }
 
   getPriorityColor(priority: string): string {
-    return this.getSeverityColor(priority); // Same color scheme as severity
+    return this.getSeverityColor(priority);
   }
 }
 

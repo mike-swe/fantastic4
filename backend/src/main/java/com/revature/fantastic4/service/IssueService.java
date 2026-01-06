@@ -5,6 +5,8 @@ import com.revature.fantastic4.entity.IssueHistory;
 import com.revature.fantastic4.entity.Project;
 import com.revature.fantastic4.entity.ProjectAssignment;
 import com.revature.fantastic4.entity.User;
+import com.revature.fantastic4.enums.ChangeType;
+import com.revature.fantastic4.enums.IssueFieldName;
 import com.revature.fantastic4.enums.IssueStatus;
 import com.revature.fantastic4.enums.Priority;
 import com.revature.fantastic4.enums.Role;
@@ -72,6 +74,23 @@ public class IssueService {
         }
     }
 
+    private void createHistoryRecord(Issue issue, User changedByUser, ChangeType changeType, 
+                                     IssueFieldName fieldName, String oldValue, String newValue) {
+        try {
+            IssueHistory history = new IssueHistory();
+            history.setIssue(issue);
+            history.setChangedByUser(changedByUser);
+            history.setChangedAt(Instant.now());
+            history.setChangeType(changeType);
+            history.setFieldName(fieldName);
+            history.setOldValue(oldValue);
+            history.setNewValue(newValue);
+            issueHistoryRepository.save(history);
+        } catch (Exception e) {
+            System.err.println("Failed to create history record: " + e.getMessage());
+        }
+    }
+
     public Issue createIssue(String title, String description, Severity severity, Priority priority, UUID projectId, User tester) {
         validateTesterRole(tester);
         
@@ -103,7 +122,12 @@ public class IssueService {
         issue.setCreatedAt(now);
         issue.setUpdatedAt(now);
         
-        return issueRepository.save(issue);
+        Issue savedIssue = issueRepository.save(issue);
+        
+        createHistoryRecord(savedIssue, tester, ChangeType.CREATED, null, null, 
+                           "Issue created with status: " + IssueStatus.OPEN);
+        
+        return savedIssue;
     }
 
     public Issue updateIssueStatus(UUID issueId, IssueStatus newStatus, User user) {
@@ -118,21 +142,38 @@ public class IssueService {
         validateUserAssignedToProject(user, issue.getProject());
         validateStatusTransitionForRole(newStatus, user.getRole());
         
+        IssueStatus oldStatus = issue.getStatus();
+        User oldAssignedTo = issue.getAssignedTo();
+        
         issue.setStatus(newStatus);
         issue.setUpdatedAt(Instant.now());
         
-        // Auto-assign to developer when they move to IN_PROGRESS or RESOLVED
         if (user.getRole() == Role.DEVELOPER && 
             (newStatus == IssueStatus.IN_PROGRESS || newStatus == IssueStatus.RESOLVED)) {
             issue.setAssignedTo(user);
         }
         
-        // Set resolvedAt timestamp when resolved
         if (newStatus == IssueStatus.RESOLVED) {
             issue.setResolvedAt(Instant.now());
         }
         
-        return issueRepository.save(issue);
+        Issue savedIssue = issueRepository.save(issue);
+        
+        if (!oldStatus.equals(newStatus)) {
+            createHistoryRecord(savedIssue, user, ChangeType.STATUS_CHANGE, IssueFieldName.STATUS,
+                               oldStatus.toString(), newStatus.toString());
+        }
+        
+        if (oldAssignedTo == null && issue.getAssignedTo() != null) {
+            createHistoryRecord(savedIssue, user, ChangeType.FIELD_UPDATE, null,
+                               "Unassigned", issue.getAssignedTo().getUsername());
+        } else if (oldAssignedTo != null && issue.getAssignedTo() != null && 
+                   !oldAssignedTo.getId().equals(issue.getAssignedTo().getId())) {
+            createHistoryRecord(savedIssue, user, ChangeType.FIELD_UPDATE, null,
+                               oldAssignedTo.getUsername(), issue.getAssignedTo().getUsername());
+        }
+        
+        return savedIssue;
     }
 
     public Issue updateIssue(UUID issueId, String title, String description, Severity severity, Priority priority, User user) {
@@ -142,6 +183,11 @@ public class IssueService {
         
         Issue issue = getIssueById(issueId);
         validateUserAssignedToProject(user, issue.getProject());
+        
+        String oldTitle = issue.getTitle();
+        String oldDescription = issue.getDescription();
+        Severity oldSeverity = issue.getSeverity();
+        Priority oldPriority = issue.getPriority();
         
         if (title != null) {
             if (title.trim().isEmpty()) {
@@ -166,7 +212,29 @@ public class IssueService {
         }
         
         issue.setUpdatedAt(Instant.now());
-        return issueRepository.save(issue);
+        Issue savedIssue = issueRepository.save(issue);
+        
+        if (title != null && !oldTitle.equals(title.trim())) {
+            createHistoryRecord(savedIssue, user, ChangeType.FIELD_UPDATE, IssueFieldName.TITLE,
+                               oldTitle, title.trim());
+        }
+        
+        if (description != null && !oldDescription.equals(description.trim())) {
+            createHistoryRecord(savedIssue, user, ChangeType.FIELD_UPDATE, IssueFieldName.DESCRIPTION,
+                               oldDescription, description.trim());
+        }
+        
+        if (severity != null && !oldSeverity.equals(severity)) {
+            createHistoryRecord(savedIssue, user, ChangeType.FIELD_UPDATE, IssueFieldName.SEVERITY,
+                               oldSeverity.toString(), severity.toString());
+        }
+        
+        if (priority != null && !oldPriority.equals(priority)) {
+            createHistoryRecord(savedIssue, user, ChangeType.FIELD_UPDATE, IssueFieldName.PRIORITY,
+                               oldPriority.toString(), priority.toString());
+        }
+        
+        return savedIssue;
     }
 
     public Issue getIssueById(UUID issueId) {
@@ -194,11 +262,9 @@ public class IssueService {
             throw new IllegalArgumentException("User with ID " + developerId + " is not a DEVELOPER");
         }
         
-        // Get all projects assigned to this developer
         List<ProjectAssignment> assignments = 
             projectAssignmentRepository.findByUser(developer);
         
-        // Get all issues from those projects
         return assignments.stream()
             .flatMap(assignment -> issueRepository.findByProject(assignment.getProject()).stream())
             .distinct()

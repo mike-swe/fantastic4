@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Issues } from '../interfaces/issues';
+import { IssueHistory } from '../interfaces/issue-history';
 
 const API_BASE_URL = 'http://localhost:8080';
 
@@ -32,5 +33,9 @@ export class IssueService {
 
   getAssignedIssues(developerId: string): Observable<Issues[]> {
     return this.http.get<Issues[]>(`${API_BASE_URL}/issues/assigned/${developerId}`);
+  }
+
+  getIssueHistory(issueId: string): Observable<IssueHistory[]> {
+    return this.http.get<IssueHistory[]>(`${API_BASE_URL}/issues/${issueId}/history`);
   }
 }
