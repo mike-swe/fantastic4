@@ -63,8 +63,6 @@ public class Issue {
 
     @Column(name = "closed_at", nullable = true)
     private Instant closedAt;
-
 //    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private Set<Comment> comments = new HashSet<>();
-
 }

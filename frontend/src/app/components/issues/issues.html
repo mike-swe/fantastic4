@@ -18,7 +18,7 @@
       <input
         type="text"
         class="search-input"
-        placeholder="Search issues by title or ID..."
+        placeholder="Search issues by title, ID, or project..."
         [(ngModel)]="searchQuery"
         (input)="onSearchChange()"
       />
@@ -46,7 +46,58 @@
           </option>
         }
       </select>
+      <select
+        class="filter-dropdown"
+        [(ngModel)]="selectedPriority"
+        (change)="onPriorityChange()"
+      >
+        @for (priority of priorityOptions; track priority) {
+          <option [value]="priority">
+            {{ priority === 'ALL' ? 'All Priority' : priority }}
+          </option>
+        }
+      </select>
+      <select
+        class="filter-dropdown"
+        [(ngModel)]="selectedAssignedTo"
+        (change)="onAssignedToChange()"
+      >
+        <option value="ALL">All Assigned To</option>
+        <option value="UNASSIGNED">Unassigned</option>
+        @for (user of assignedUsers; track user.id) {
+          <option [value]="user.id">{{ user.username }}</option>
+        }
+      </select>
+      <select
+        class="filter-dropdown"
+        [(ngModel)]="selectedDateRange"
+        (change)="onDateRangeChange()"
+      >
+        @for (range of dateRangeOptions; track range) {
+          <option [value]="range">
+            {{ range === 'ALL' ? 'All Dates' : range.replace('_', ' ') }}
+          </option>
+        }
+      </select>
     </div>
+    @if (selectedDateRange === 'CUSTOM') {
+      <div class="custom-date-container">
+        <input
+          type="date"
+          class="date-input"
+          [(ngModel)]="customFromDate"
+          (change)="onDateRangeChange()"
+          placeholder="From Date"
+        />
+        <input
+          type="date"
+          class="date-input"
+          [(ngModel)]="customToDate"
+          (change)="onDateRangeChange()"
+          placeholder="To Date"
+        />
+      </div>
+    }
   </div>
 
   <div class="issues-content">

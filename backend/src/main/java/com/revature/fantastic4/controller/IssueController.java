@@ -119,7 +119,6 @@ public class IssueController {
         UUID userId = jwtUtil.extractId(token);
         User user = userService.getUserById(userId);
         
-        // Allow DEVELOPER to see their own assigned issues, or ADMIN to see any developer's issues
         if (user.getRole() != Role.ADMIN && 
             !userId.equals(developerId)) {
             throw new IllegalArgumentException("You can only view your own assigned issues");

@@ -31,7 +31,6 @@ export class Projects implements OnInit {
   }
 
   private loadUserAndProjects(): void {
-    // Check token first
     const token = this.authService.getToken();
     
     if (!token) {
@@ -39,13 +38,11 @@ export class Projects implements OnInit {
       return;
     }
 
-    // Check authentication
     if (!this.authService.isAuthenticated()) {
       console.warn('Projects - User not authenticated');
       return;
     }
 
-    // Get current user
     this.currentUser = this.authService.getCurrentUser();
     
     if (!this.currentUser) {
@@ -53,20 +50,17 @@ export class Projects implements OnInit {
       return;
     }
 
-    // Set user role using ?? to handle role: 0 (ADMIN)
     this.userRole = this.currentUser.role ?? null;
     
     console.log('Projects - Current User:', this.currentUser);
     console.log('Projects - User Role:', this.userRole);
     
-    // Load projects only if we have a user
     if (this.currentUser && this.userRole !== null && this.userRole !== undefined) {
       this.loadProjects();
     }
   }
 
   loadProjects(): void {
-    // Check if userRole is set (including 0 for ADMIN)
     if (this.userRole === null || this.userRole === undefined) {
       console.warn('Projects - No user role set, cannot load projects');
       return;
@@ -77,7 +71,7 @@ export class Projects implements OnInit {
         next: (projects) => {
           this.projects = projects;
           console.log('Projects - Loaded projects:', projects.length);
-          this.cdr.detectChanges(); // Ensure view updates
+          this.cdr.detectChanges();
         },
         error: (error) => {
           console.error('Projects - Error loading projects:', error);
@@ -89,7 +83,7 @@ export class Projects implements OnInit {
           next: (projects) => {
             this.projects = projects;
             console.log('Projects - Loaded user projects:', projects.length);
-            this.cdr.detectChanges(); // Ensure view updates
+            this.cdr.detectChanges();
           },
           error: (error) => {
             console.error('Projects - Error loading user projects:', error);

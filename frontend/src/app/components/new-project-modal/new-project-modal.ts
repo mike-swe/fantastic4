@@ -24,12 +24,10 @@ export class NewProjectModal implements OnChanges {
   constructor(private projectService: ProjectService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    // Populate form when project is provided for editing
     if (this.project && this.isEditMode) {
       this.projectName = this.project.name || '';
       this.projectDescription = this.project.description || '';
     } else if (!this.isEditMode) {
-      // Reset form when in create mode
       this.resetForm();
     }
   }
@@ -37,20 +35,17 @@ export class NewProjectModal implements OnChanges {
   onSubmit(): void {
     this.errorMessage.set('');
     
-    // Validate form
     if (!this.projectName || !this.projectName.trim()) {
       this.errorMessage.set('Project name is required');
       return;
     }
 
-    // Trim whitespace
     const trimmedName = this.projectName.trim();
     const trimmedDescription = this.projectDescription.trim();
 
     this.isLoading.set(true);
 
     if (this.isEditMode && this.project) {
-      // Update existing project
       const updatedProject: Partial<Project> = {
         id: this.project.id,
         name: trimmedName,
@@ -77,7 +72,6 @@ export class NewProjectModal implements OnChanges {
         }
       });
     } else {
-      // Create new project (backend will set status to ACTIVE and createdBy from JWT)
     const newProject: Partial<Project> = {
       name: trimmedName,
       description: trimmedDescription || undefined,
@@ -110,7 +104,6 @@ export class NewProjectModal implements OnChanges {
   }
 
   onBackdropClick(event: Event): void {
-    // Close modal if clicking on the backdrop (not the modal content)
     if ((event.target as HTMLElement).classList.contains('modal-overlay')) {
       this.onCancel();
     }
