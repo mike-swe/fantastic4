@@ -30,8 +30,6 @@ public class AuditLog
         this.timestamp = Instant.now();
     }
 
-    // Getters and setters
-
     public Long getId() 
     {
         return id;

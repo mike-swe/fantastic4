@@ -2,14 +2,12 @@
   <div class="issues-header">
     <div class="header-content">
       <div class="header-title-section">
-        <h1 class="issues-title">Issues</h1>
-        <p class="issues-subtitle">Track and manage issues across all projects</p>
+        <h1 class="issues-title">My Issues</h1>
+        <p class="issues-subtitle">Manage issues you've created</p>
       </div>
-      @if (userRole === Role.TESTER) {
-        <button class="btn-new-issue" (click)="createNewIssue()">
-          <span class="btn-icon">+</span> New Issue
-        </button>
-      }
+      <button class="btn-new-issue" (click)="createNewIssue()">
+        <span class="btn-icon">+</span> New Issue
+      </button>
     </div>
   </div>
 
@@ -92,21 +90,53 @@
           
           <div class="issue-footer">
             <div class="issue-assignment">
-              @if (issue.createdBy) {
+              @if (issue.assignedTo) {
                 <div class="assignment-info">
-                  <span class="assignment-label">Created by</span>
-                  <div class="user-avatar" [style.background-color]="'#3b82f6'">
-                    {{ getUserInitials(issue.createdBy) }}
+                  <span class="assignment-label">Assigned to</span>
+                  <div class="user-avatar" [style.background-color]="'#10b981'">
+                    {{ getUserInitials(issue.assignedTo) }}
                   </div>
-                  <span class="user-name">{{ issue.createdBy.username }}</span>
+                  <span class="user-name">{{ issue.assignedTo.username }}</span>
                 </div>
+              } @else {
+                <span class="unassigned">Unassigned</span>
               }
+            </div>
+          </div>
+
+          <div class="status-update-section">
+            <h4 class="section-title">Update Status</h4>
+            <div class="status-buttons">
+              <button
+                class="btn-status"
+                [class.btn-status-open]="issue.status !== 'OPEN'"
+                [disabled]="issue.status === 'OPEN' || updatingStatus[issue.id]"
+                (click)="$event.stopPropagation(); updateIssueStatus(issue, 'OPEN')"
+              >
+                @if (updatingStatus[issue.id]) {
+                  Updating...
+                } @else {
+                  Mark as Open
+                }
+              </button>
+              <button
+                class="btn-status"
+                [class.btn-status-closed]="issue.status !== 'CLOSED'"
+                [disabled]="issue.status === 'CLOSED' || updatingStatus[issue.id]"
+                (click)="$event.stopPropagation(); updateIssueStatus(issue, 'CLOSED')"
+              >
+                @if (updatingStatus[issue.id]) {
+                  Updating...
+                } @else {
+                  Mark as Closed
+                }
+              </button>
             </div>
           </div>
         </div>
       } @empty {
         <div class="empty-state">
-          <p>No issues found. @if (userRole === Role.TESTER) { Create your first issue to get started! } @else { No issues match your filters. }</p>
+          <p>No issues found. Create your first issue to get started!</p>
         </div>
       }
     </div>

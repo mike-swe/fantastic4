@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Role } from '../../enum/role';
 import { Project } from '../../interfaces/project';
 import { Issues} from '../../interfaces/issues';
 import { User } from '../../interfaces/user';
 import { ProjectService } from '../../services/project-service';
 import { IssueService } from '../../services/issue-service';
+import { AuthService } from '../../services/auth-service';
 
 
 @Component({
@@ -19,43 +20,109 @@ export class Dashboard implements OnInit {
   projects: Project[] = [];
   issues: Issues[] = [];
 
-  constructor(private projectService: ProjectService,
-    private issueService: IssueService
+  constructor(
+    private projectService: ProjectService,
+    private issueService: IssueService,
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ){}
 
-
   ngOnInit(): void {
-    // Todo:
-    // get authentication for the currentUser. 
-    // this.currentUser ;
-    // this.userRole = this.currentUser?.role || null;
-      this.loadDashBoard();
-      this.loadIssues();
+    this.loadUserAndData();
   }
 
+  private loadUserAndData(): void {
+    const token = this.authService.getToken();
+    
+    if (!token) {
+      console.warn('Dashboard - No token found');
+      return;
+    }
 
-  loadDashBoard(): void{
-    if (this.userRole == Role.ADMIN){
-      this.projectService.getAllProjects().subscribe(projects => {
-        this.projects = projects;
-      })
-    } else if (this.userRole === Role.TESTER || this.userRole === Role.DEVELOPER){
-      if (this.currentUser?.id){
-        this.projectService.getUserProjects(this.currentUser.id).subscribe(projects => {
+    if (!this.authService.isAuthenticated()) {
+      console.warn('Dashboard - User not authenticated');
+      return;
+    }
+
+    this.currentUser = this.authService.getCurrentUser();
+    
+    if (!this.currentUser) {
+      console.warn('Dashboard - Could not get current user');
+      return;
+    }
+
+    this.userRole = this.currentUser.role ?? null;
+    
+    console.log('Dashboard - Current User:', this.currentUser);
+    console.log('Dashboard - User Role:', this.userRole);
+    
+    if (this.currentUser && this.userRole !== null && this.userRole !== undefined) {
+      this.loadDashBoard();
+      this.loadIssues();
+    }
+  }
+
+  loadDashBoard(): void {
+    if (this.userRole === null || this.userRole === undefined) {
+      console.warn('Dashboard - No user role set, cannot load projects');
+      return;
+    }
+
+    if (this.userRole === Role.ADMIN) {
+      this.projectService.getAllProjects().subscribe({
+        next: (projects) => {
           this.projects = projects;
-       })
+          console.log('Dashboard - Loaded projects:', projects.length);
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error('Dashboard - Error loading projects:', error);
+        }
+      });
+    } else if (this.userRole === Role.TESTER || this.userRole === Role.DEVELOPER) {
+      if (this.currentUser?.id) {
+        this.projectService.getUserProjects(this.currentUser.id).subscribe({
+          next: (projects) => {
+            this.projects = projects;
+            console.log('Dashboard - Loaded user projects:', projects.length);
+            this.cdr.detectChanges();
+          },
+          error: (error) => {
+            console.error('Dashboard - Error loading user projects:', error);
+          }
+        });
       }
     }
   }
 
   loadIssues(): void {
-    if (this.userRole === Role.ADMIN){
-      this.issueService.getAllIssues().subscribe(issues => this.issues = issues);
-    } else if (this.userRole === Role.TESTER || this.userRole === Role.DEVELOPER) {
+    if (this.userRole === null || this.userRole === undefined) {
+      console.warn('Dashboard - No user role set, cannot load issues');
+      return;
+    }
 
-      if (this.currentUser?.id) {
-        this.issueService.getIssuesByUser(this.currentUser.id).subscribe(issues => {
+    if (this.userRole === Role.ADMIN) {
+      this.issueService.getAllIssues().subscribe({
+        next: (issues) => {
           this.issues = issues;
+          console.log('Dashboard - Loaded issues:', issues.length);
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error('Dashboard - Error loading issues:', error);
+        }
+      });
+    } else if (this.userRole === Role.TESTER || this.userRole === Role.DEVELOPER) {
+      if (this.currentUser?.id) {
+        this.issueService.getIssuesByUser(this.currentUser.id).subscribe({
+          next: (issues) => {
+            this.issues = issues;
+            console.log('Dashboard - Loaded user issues:', issues.length);
+            this.cdr.detectChanges();
+          },
+          error: (error) => {
+            console.error('Dashboard - Error loading user issues:', error);
+          }
         });
       }
     }

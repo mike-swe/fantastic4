@@ -47,7 +47,7 @@
   <div class="issues-content">
     <div class="issues-grid">
       @for (issue of filteredIssues; track issue.id) {
-        <div class="issue-card">
+        <div class="issue-card" (click)="openIssueDetail(issue)">
           <div class="issue-header">
             <span class="issue-id">{{ formatIssueId(issue.id) }}</span>
             <div class="issue-tags">
@@ -117,7 +117,7 @@
                 class="btn-status"
                 [class.btn-status-in-progress]="issue.status !== 'IN_PROGRESS'"
                 [disabled]="issue.status === 'IN_PROGRESS' || updatingStatus[issue.id]"
-                (click)="updateIssueStatus(issue, 'IN_PROGRESS')"
+                (click)="$event.stopPropagation(); updateIssueStatus(issue, 'IN_PROGRESS')"
               >
                 @if (updatingStatus[issue.id]) {
                   Updating...
@@ -129,7 +129,7 @@
                 class="btn-status"
                 [class.btn-status-resolved]="issue.status !== 'RESOLVED'"
                 [disabled]="issue.status === 'RESOLVED' || updatingStatus[issue.id]"
-                (click)="updateIssueStatus(issue, 'RESOLVED')"
+                (click)="$event.stopPropagation(); updateIssueStatus(issue, 'RESOLVED')"
               >
                 @if (updatingStatus[issue.id]) {
                   Updating...
@@ -147,5 +147,12 @@
       }
     </div>
   </div>
+
+  @if (showDetailModal && selectedIssue) {
+    <app-issue-detail-modal
+      [issue]="selectedIssue"
+      (close)="onDetailModalClose()"
+    ></app-issue-detail-modal>
+  }
 </div>
 
