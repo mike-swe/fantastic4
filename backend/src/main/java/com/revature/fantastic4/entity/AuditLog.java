@@ -2,6 +2,7 @@ package com.revature.fantastic4.entity;
 
 import jakarta.persistence.*;
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "audit_logs")
@@ -12,13 +13,13 @@ public class AuditLog
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long actorUserId;
+    private UUID actorUserId;
 
     private String action;
 
     private String entityType;
 
-    private Long entityId;
+    private UUID entityId;
 
     private Instant timestamp;
 
@@ -40,12 +41,12 @@ public class AuditLog
         this.id = id;
     }
 
-    public Long getActorUserId() 
+    public UUID getActorUserId() 
     {
         return actorUserId;
     }
 
-    public void setActorUserId(Long actorUserId) 
+    public void setActorUserId(UUID actorUserId) 
     {
         this.actorUserId = actorUserId;
     }
@@ -70,12 +71,12 @@ public class AuditLog
         this.entityType = entityType;
     }
 
-    public Long getEntityId() 
+    public UUID getEntityId() 
     {
         return entityId;
     }
 
-    public void setEntityId(Long entityId) 
+    public void setEntityId(UUID entityId) 
     {
         this.entityId = entityId;
     }
