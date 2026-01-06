@@ -1,0 +1,52 @@
+<div class="projects-page">
+  <div class="projects-header">
+    <div class="header-content">
+      <div class="header-title-section">
+        <h1 class="projects-title">Projects</h1>
+        <p class="projects-subtitle">Manage and track all your software projects</p>
+      </div>
+      @if (userRole === Role.ADMIN) {
+        <button class="btn-new-project" (click)="createNewProject()">
+          + New Project
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="projects-content">
+    <div class="projects-grid">
+      @for (project of projects; track project.id) {
+        <div class="project-card">
+          <div class="project-header">
+          <h3 class="project-name">{{ project.name }}</h3>
+            @if (userRole === Role.ADMIN) {
+              <div class="project-actions">
+                <button class="btn-action btn-edit" (click)="editProject(project)" title="Edit project">
+                  ✏️
+                </button>
+                <button class="btn-action btn-delete" (click)="deleteProject(project)" title="Delete project">
+                  🗑️
+                </button>
+              </div>
+            }
+          </div>
+          <p class="project-description">{{ project.description }}</p>
+        </div>
+      } @empty {
+        <div class="empty-state">
+          <p>No projects found. Create your first project to get started!</p>
+        </div>
+      }
+    </div>
+  </div>
+
+  @if (showModal) {
+    <app-new-project-modal
+      [project]="editingProject"
+      [isEditMode]="editingProject !== null"
+      (close)="onModalClose()"
+      (projectCreated)="onProjectCreated($event)"
+      (projectUpdated)="onProjectUpdated($event)"
+    ></app-new-project-modal>
+  }
+</div>

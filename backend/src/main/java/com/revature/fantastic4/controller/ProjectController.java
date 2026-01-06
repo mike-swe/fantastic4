@@ -11,7 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -22,8 +24,6 @@ public class ProjectController {
     private final ProjectService projectService;
     private final UserService userService;
     private final JwtUtil jwtUtil;
-
-    private final ProjectRepository projectRepository;
 
     @PostMapping
     public ResponseEntity<Project> createProject(
@@ -68,12 +68,6 @@ public class ProjectController {
         return ResponseEntity.ok(projects);
     }
 
-    @GetMapping
-    public ResponseEntity<List<Project>> getAllProjectsByUser(User user) {
-        List<Project> projectsByUser = projectService.getAllProjectsByUser(user);
-        return ResponseEntity.ok(projectsByUser);
-
-    }
     @GetMapping("/{projectId}")
     public ResponseEntity<Project> getProjectById(@PathVariable UUID projectId) {
         Project project = projectService.getProjectById(projectId);
@@ -81,8 +75,8 @@ public class ProjectController {
     }
 
     @PostMapping("/{projectId}/assign/{userId}")
-    public ResponseEntity<ProjectAssignment> assignUserToProject(
-            @PathVariable UUID projectId,
+    public ResponseEntity<Map<String, String>> assignUserToProject(
+        @PathVariable UUID projectId,
             @PathVariable UUID userId,
             @RequestHeader("Authorization") String authHeader) {
         String token = jwtUtil.extractTokenFromHeader(authHeader);
@@ -91,7 +85,27 @@ public class ProjectController {
         
         ProjectAssignment assignment = userService.addUserToProject(projectId, userId, adminUser);
         
-        return ResponseEntity.status(HttpStatus.CREATED).body(assignment);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "User assigned successfully");
+        response.put("assignmentId", assignment.getId().toString());
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @DeleteMapping("/{projectId}")
+    public ResponseEntity<Map<String, String>> deleteProject(
+            @PathVariable UUID projectId,
+            @RequestHeader("Authorization") String authHeader) {
+        String token = jwtUtil.extractTokenFromHeader(authHeader);
+        UUID adminUserId = jwtUtil.extractId(token);
+        User adminUser = userService.getUserById(adminUserId);
+        
+        projectService.deleteProject(projectId, adminUser);
+        
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Project deleted successfully");
+        
+        return ResponseEntity.ok(response);
     }
 
 }
