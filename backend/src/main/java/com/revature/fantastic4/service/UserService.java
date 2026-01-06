@@ -1,5 +1,6 @@
 package com.revature.fantastic4.service;
 
+import com.revature.fantastic4.dto.RegisterRequest;
 import com.revature.fantastic4.entity.Project;
 import com.revature.fantastic4.entity.ProjectAssignment;
 import com.revature.fantastic4.entity.User;
@@ -102,6 +103,20 @@ public class UserService {
         return assignments.stream()
                 .map(ProjectAssignment::getUser)
                 .collect(Collectors.toList());
+    }
+
+    public User createNewUser(RegisterRequest dto) {
+        // 1. Create a new User Entity
+        User user = new User();
+
+        // 2. Map fields from DTO to Entity
+        user.setUsername(dto.getUsername());
+        user.setPassword(dto.getPassword());
+        user.setEmail(dto.getEmail());
+        user.setRole(Role.valueOf(dto.getRole()));
+
+        // 4. Save to Database
+        return userRepository.save(user);
     }
 }
 

@@ -3,13 +3,14 @@
   <input type="text" [(ngModel)]="emailInput" placeholder="Email">
   <input type="text" [(ngModel)]="usernameInput" placeholder="Username">
   <input type="password" [(ngModel)]="passwordInput" placeholder="Password">
-  <select name = "type" id = "type">
-    <option value = "developer"> dev</option>
-    <option value = "admin"> admin</option>
-    <option value = "tester"> tester</option>
+
+  <select [(ngModel)] = "roleInput" name = "role" id = "role">
+    <option value = "DEVELOPER"> dev</option>
+    <option value = "ADMIN"> admin</option>
+    <option value = "TESTER"> tester</option>
   </select>
 
-  <button>Create</button>
+  <button (click) = "createUser()">create</button>
 
   
   <button routerLink="/login">back</button>

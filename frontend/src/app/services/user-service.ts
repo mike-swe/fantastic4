@@ -45,5 +45,16 @@ export class UserService {
     if (upperRole === 'DEVELOPER') return Role.DEVELOPER;
     return Role.TESTER;
   }
+
+  insertUser(userName: string, password: string , email: string , role: string): Observable<any> {
+    const userPayload = {
+      username: userName,
+      password: password,
+      email: email,
+      role: role
+    };
+
+    return this.http.post(`${API_BASE_URL}/users/create-account`, userPayload, { responseType: 'text' })
+  }
 }
 
