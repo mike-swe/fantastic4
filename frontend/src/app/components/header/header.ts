@@ -21,7 +21,6 @@ export class Header implements OnInit {
   ngOnInit(): void {
     this.loadUser();
     
-    // Reload user data when route changes (e.g., after login)
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
