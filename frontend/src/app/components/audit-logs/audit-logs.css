@@ -165,16 +165,6 @@
   font-weight: 500;
 }
 
-.entity-type-cell {
-  text-transform: capitalize;
-}
-
-.entity-id-cell {
-  font-family: monospace;
-  font-size: 0.85rem;
-  color: #6b7280;
-}
-
 .details-cell {
   max-width: 400px;
   word-wrap: break-word;

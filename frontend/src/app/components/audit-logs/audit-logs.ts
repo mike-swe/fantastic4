@@ -22,12 +22,10 @@ export class AuditLogs implements OnInit {
   users: User[] = [];
   readonly Role = Role;
 
-  selectedEntityType: string = 'ALL';
   selectedActorId: string = 'ALL';
   isLoading = false;
   errorMessage: string | null = null;
 
-  entityTypes: string[] = ['ALL', 'ISSUE', 'PROJECT', 'PROJECT_ASSIGNMENT'];
   actorOptions: Array<{ id: string; username: string }> = [];
 
   constructor(
@@ -110,19 +108,11 @@ export class AuditLogs implements OnInit {
   applyFilters(): void {
     let filtered = [...this.auditLogs];
 
-    if (this.selectedEntityType !== 'ALL') {
-      filtered = filtered.filter(log => log.entityType === this.selectedEntityType);
-    }
-
     if (this.selectedActorId !== 'ALL') {
       filtered = filtered.filter(log => log.actorUserId === this.selectedActorId);
     }
 
     this.filteredLogs = filtered;
-  }
-
-  onEntityTypeChange(): void {
-    this.applyFilters();
   }
 
   onActorChange(): void {
@@ -148,13 +138,6 @@ export class AuditLogs implements OnInit {
 
   formatAction(action: string): string {
     return action.replace(/_/g, ' ').toLowerCase()
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  }
-
-  formatEntityType(entityType: string): string {
-    return entityType.replace(/_/g, ' ').toLowerCase()
       .split(' ')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');

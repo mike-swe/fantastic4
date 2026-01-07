@@ -16,20 +16,6 @@
     <div class="filters-section">
       <div class="filters">
         <div class="filter-group">
-          <label for="entityType">Entity Type:</label>
-          <select 
-            id="entityType" 
-            [(ngModel)]="selectedEntityType" 
-            (change)="onEntityTypeChange()"
-            class="filter-select"
-          >
-            @for (type of entityTypes; track type) {
-              <option [value]="type">{{ type === 'ALL' ? 'All Types' : formatEntityType(type) }}</option>
-            }
-          </select>
-        </div>
-
-        <div class="filter-group">
           <label for="actor">Actor:</label>
           <select 
             id="actor" 
@@ -66,8 +52,6 @@
                 <th>Timestamp</th>
                 <th>Actor</th>
                 <th>Action</th>
-                <th>Entity Type</th>
-                <th>Entity ID</th>
                 <th>Details</th>
               </tr>
             </thead>
@@ -79,8 +63,6 @@
                   <td class="action-cell">
                     <span class="action-badge">{{ formatAction(log.action) }}</span>
                   </td>
-                  <td class="entity-type-cell">{{ formatEntityType(log.entityType) }}</td>
-                  <td class="entity-id-cell">{{ log.entityId.substring(0, 8) }}...</td>
                   <td class="details-cell">{{ log.details }}</td>
                 </tr>
               }
