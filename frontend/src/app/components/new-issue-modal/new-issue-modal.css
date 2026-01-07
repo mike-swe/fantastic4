@@ -174,12 +174,12 @@
 }
 
 .btn-create {
-  background-color: #10b981;
+  background-color: #3b82f6;
   color: #ffffff;
 }
 
 .btn-create:hover:not(:disabled) {
-  background-color: #059669;
+  background-color: #2563eb;
 }
 
 .btn-cancel:disabled,

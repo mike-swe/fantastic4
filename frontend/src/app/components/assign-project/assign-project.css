@@ -246,7 +246,7 @@
 }
 
 .btn-assign {
-  background-color: #10b981;
+  background-color: #3b82f6;
   color: #ffffff;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -259,7 +259,7 @@
 }
 
 .btn-assign:hover:not(:disabled) {
-  background-color: #059669;
+  background-color: #2563eb;
 }
 
 .btn-assign:disabled {
