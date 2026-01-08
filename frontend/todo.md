@@ -1,3 +1,3 @@
+safeguards when making new account
 
-Create mock authservice to prep for jwt 
-setup authguard
+redirect from login page if logged in

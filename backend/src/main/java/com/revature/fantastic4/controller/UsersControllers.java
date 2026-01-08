@@ -1,6 +1,7 @@
 package com.revature.fantastic4.controller;
 
 import com.revature.fantastic4.dto.LoginRequest;
+import com.revature.fantastic4.dto.RegisterRequest;
 import com.revature.fantastic4.dto.TokenTransport;
 import com.revature.fantastic4.entity.Project;
 import com.revature.fantastic4.entity.User;
@@ -62,5 +63,9 @@ public class UsersControllers {
         return ResponseEntity.ok(users);
     }
 
+    @PostMapping("/create-account")
+    public ResponseEntity<?> createAccount(@RequestBody RegisterRequest request) {
+        userService.createNewUser(request);
+        return ResponseEntity.ok("User Registered");
+    }
 }
-
