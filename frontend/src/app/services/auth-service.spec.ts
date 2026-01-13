@@ -89,6 +89,48 @@ describe('AuthService', () => {
     expect(result).toBe(false);
   });
 
+  //UNIT TEST !token : getCurrentUser()
+  it('should return null if no token', () => {
+    mockJwtStorage.getToken.mockReturnValue(null)
+
+    const result = service.getCurrentUser();
+
+    expect(result).toBe(null);
+  });
+
+  //UNIT TEST Correct : getCurrentUser()
+  it('should return user if token exists', () => {
+    mockJwtStorage.getToken.mockReturnValue('kitasan');
+    const mockPayload = {
+      sub: 'id',
+      username: 'goldship',
+      role: 'ADMIN_ROLE'
+    };
+    vi.spyOn(service as any, 'decodeToken').mockReturnValue(mockPayload);
+    vi.spyOn(service as any, 'mapRole').mockReturnValue('ADMIN');
+
+    const result = service.getCurrentUser();
+
+    expect(result).toEqual({
+      id: 'id',
+      username: 'goldship',
+      email: '',
+      role: 'ADMIN'
+    });
+    
+  });
+
+  //UNIT TEST Error: getCurrentUser()
+  it('should return null and error if the token is bad', () =>{
+    mockJwtStorage.getToken.mockReturnValue('kitasan');
+
+    vi.spyOn(service as any, 'decodeToken').mockImplementation(() => {
+      throw new Error("badtoken")
+    });
+
+    const result = service.getCurrentUser()
+    expect(result).toBe(null)
+  });
 
   //THIS TEST SHOULD FAIL
   it('this test should fail because 1 is not 2', () => {
