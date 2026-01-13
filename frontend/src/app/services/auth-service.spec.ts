@@ -60,6 +60,35 @@ describe('AuthService', () => {
     expect(mockJwtStorage.getToken).toHaveBeenCalled();
   });
 
+  //UNIT TEST 1: isAuthenticated()
+  it('should return true if token is not expired', () => {
+    mockJwtStorage.getToken.mockReturnValue('tokaiteio');
+    const futureDate = new Date('2900-01-01').getTime()/1000
+    vi.spyOn(service as any,'decodeToken').mockReturnValue({exp: futureDate});
+    expect(service.isAuthenticated()).toBe(true);
+  });
+
+  //UNIT TEST 2: isAuthenticated()
+  it('should return false if token is expired', () => {
+    mockJwtStorage.getToken.mockReturnValue('tokaiteio');
+    const futureDate = new Date('2000-01-01').getTime()/1000
+    vi.spyOn(service as any,'decodeToken').mockReturnValue({exp: futureDate});
+    expect(service.isAuthenticated()).toBe(false);
+  });
+
+  //UNIT TEST 3: isAuthenticated()
+  it('should return false if there is no token/bad token', () => {
+    mockJwtStorage.getToken.mockReturnValue('tokaiteio');
+    
+    vi.spyOn(service as any, 'decodeToken').mockImplementation(() => {
+      throw new Error("badtoken")
+    });
+
+    const result = service.isAuthenticated();
+
+    expect(result).toBe(false);
+  });
+
 
   //THIS TEST SHOULD FAIL
   it('this test should fail because 1 is not 2', () => {
