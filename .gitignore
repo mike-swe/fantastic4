@@ -210,6 +210,10 @@ backend/.project
 backend/.classpath
 backend/.settings/
 backend/.gradletasknamecache
+*.sqlite
+*.sqlite3
+db.sqlite
+backend/db.sqlite
 # Keep the wrapper
 !backend/gradle/wrapper/gradle-wrapper.jar
 !backend/gradle/wrapper/gradle-wrapper.properties
