@@ -69,17 +69,12 @@ public class ProjectService {
                 changeDetails.append("name: ").append(oldName).append(" -> ").append(name.trim()).append("; ");
             }
         }
-        // The description here never checks if the old description is the same as the new. 
         if (description != null) {
             if (!oldDescription.equals(description)){
-                // project.setDescription(description.trim());
-                // hasChanges = true;
-                // changeDetails.append("description updated; ");
-
+                project.setDescription(description.trim());
+                hasChanges = true;
+                changeDetails.append("description updated; ");
             } 
-            project.setDescription(description.trim());
-            hasChanges = true;
-            changeDetails.append("description updated; ");
         }
         
         if (status != null && !oldStatus.equals(status)) {
