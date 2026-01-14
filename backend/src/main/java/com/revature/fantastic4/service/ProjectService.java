@@ -54,6 +54,7 @@ public class ProjectService {
         Project project = getProjectById(projectId);
         String oldName = project.getName();
         ProjectStatus oldStatus = project.getStatus();
+        String oldDescription = project.getDescription();
         
         boolean hasChanges = false;
         StringBuilder changeDetails = new StringBuilder();
@@ -68,8 +69,14 @@ public class ProjectService {
                 changeDetails.append("name: ").append(oldName).append(" -> ").append(name.trim()).append("; ");
             }
         }
-        
+        // The description here never checks if the old description is the same as the new. 
         if (description != null) {
+            if (!oldDescription.equals(description)){
+                // project.setDescription(description.trim());
+                // hasChanges = true;
+                // changeDetails.append("description updated; ");
+
+            } 
             project.setDescription(description.trim());
             hasChanges = true;
             changeDetails.append("description updated; ");
