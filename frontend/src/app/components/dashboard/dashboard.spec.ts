@@ -434,6 +434,7 @@ describe('Dashboard', () => {
       const tableRows = compiled.querySelectorAll('.issues-table tbody tr');
 
   
+      // Should have 2 issue rows (not counting header)
       expect(tableRows.length).toBe(2);
     });
 
