@@ -42,6 +42,7 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.13.0'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.13.0'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
+<<<<<<< Updated upstream
 
 	testImplementation 'io.rest-assured:rest-assured:6.0.0'
 
@@ -55,6 +56,10 @@ dependencies {
 	testImplementation 'org.junit.platform:junit-platform-suite:1.14.1'
 
 	testImplementation 'org.seleniumhq.selenium:selenium-java:4.39.0'
+=======
+	testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.mockito:mockito-junit-jupiter'
+>>>>>>> Stashed changes
 }
 
 tasks.named('test') {
