@@ -109,12 +109,16 @@ export class AuthService {
   }
 
   private mapRole(roleString: string): Role {
-    const upperRole = roleString.toUpperCase();
-    if (upperRole === 'ADMIN') return Role.ADMIN;
-    if (upperRole === 'TESTER') return Role.TESTER;
-    if (upperRole === 'DEVELOPER') return Role.DEVELOPER;
-    return Role.TESTER; 
+  switch (roleString.toUpperCase()) {
+    case 'ADMIN':
+      return Role.ADMIN;
+    case 'DEVELOPER':
+      return Role.DEVELOPER;
+    case 'TESTER':
+    default: // This handles 'TESTER' AND anything else
+      return Role.TESTER;
   }
+}
 
   createUserAccount(usernameInput: string, passwordInput: string): Observable<any> {
     return this.http.post('http://localhost:8080/users', {
