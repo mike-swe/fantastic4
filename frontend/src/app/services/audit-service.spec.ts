@@ -6,6 +6,7 @@ import { AuditLog } from '../interfaces/audit-log';
 import { provideHttpClient } from '@angular/common/http';
 
 import { firstValueFrom } from 'rxjs';
+import { Type } from '@angular/core';
 
 
 describe('AuditService', () => {
@@ -32,15 +33,6 @@ describe('AuditService', () => {
       entityId: '101', 
       timestamp: '2024-05-20T10:00:00Z', 
       details: 'Created new user' 
-    },
-    { 
-      id: 2, 
-      actorUserId: 'editor-002', 
-      action: 'UPDATE', 
-      entityType: 'PRODUCT', 
-      entityId: '505', 
-      timestamp: '2024-05-20T11:30:00Z', 
-      details: 'Updated price' 
     }
   ];
 
@@ -74,15 +66,19 @@ describe('AuditService', () => {
         req.flush(mockData);
       });
 
-      it('should fetch logs by entity type', () => {
+      it('should fetch logs by entity type', async () => {
         const type = 'USER';
-        service.getAuditLogsByEntityType(type).subscribe(logs => {
-          expect(logs[0].entityType).toBe('USER');
-        });
+
+        const promise = firstValueFrom(service.getAuditLogsByEntityType(type));
 
         const req = httpMock.expectOne(`${baseUrl}/audit/entity/${type}`);
         expect(req.request.method).toBe('GET');
+
         req.flush([mockData[0]]);
+        
+        const logs = await promise;
+        
+        expect(logs[0].entityType).toBe(type)
       });
 
       it('should fetch logs by actor ID', async () => {
@@ -93,6 +89,7 @@ describe('AuditService', () => {
 
         // 2. Mock the HTTP response as usual
         const req = httpMock.expectOne(`${baseUrl}/audit/actor/${actorId}`);
+        expect(req.request.method).toBe('GET');
         req.flush([mockData[0]]);
 
         // 3. Await the promise to get the actual data

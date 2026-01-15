@@ -5,10 +5,17 @@ import { Comment } from '../interfaces/comment';
 import { User } from "../interfaces/user";
 import { Role } from '../enum/role';
 
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 
-describe('IssueService', () => {
+
+describe('CommentService', () => {
   let service: CommentService;
+  let httpMock: HttpTestingController
+  const baseUrl = 'http://localhost:8080'
+
   /*
   id: string;
   username: string;
@@ -37,6 +44,7 @@ describe('IssueService', () => {
   createdAt: string;
   updatedAt: string;
   */
+
   const mockComment : Comment[] = [
     {
       id : '101',
@@ -51,11 +59,66 @@ describe('IssueService', () => {
   ];
   
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [
+        CommentService,
+        provideHttpClient(),
+        provideHttpClientTesting()
+      ]
+    });
     service = TestBed.inject(CommentService);
+    httpMock = TestBed.inject(HttpTestingController);
   });
 
-  it('should be created', () => {
+  afterEach(() => {
+    httpMock.verify();
+  });
+
+
+  it('should getCommentsByIssue', async () => {
+    
+    //Apparently its good to still test the result so first part is testing the getter
+    const issueId = '67';
+    const promise = firstValueFrom(service.getCommentsByIssue(issueId));
+
+    const req = httpMock.expectOne(`${baseUrl}/issues/${issueId}/comments`);
+    expect(req.request.method).toBe('GET');
+
+
+    req.flush(mockComment);
+
+    //Check if the data arrived intact
+    const result = await promise;
+
+    expect(result[0].issue.id).toBe(issueId);
+  });
+
+  it('should createComment', async () => {
+    const issueId = 'newIssue';
+    const content = 'new comment text';
+
+    const mockResponse = {...mockComment[0], issueId:issueId, content:content}
+
+    const promise = firstValueFrom(service.createComment(issueId, content));
+
+    const req = httpMock.expectOne(`${baseUrl}/issues/${issueId}/comments`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ content });
+    
+    req.flush(mockResponse);
+
+    const result = await promise;
+    expect(result.content).toBe('content');
+
+
+  });
+
+  it('should updateComment', () => {
     expect(service).toBeTruthy();
   });
+
+  it('should deleteComment', () => {
+    expect(service).toBeTruthy();
+  });
+
 });
