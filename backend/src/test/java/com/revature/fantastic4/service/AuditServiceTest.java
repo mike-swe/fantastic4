@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.revature.fantastic4.entity.AuditLog;
 import com.revature.fantastic4.repository.AuditLogRepository;
+import org.junit.jupiter.params.ParameterizedTest;
 
 @ExtendWith(MockitoExtension.class)
 public class AuditServiceTest {
@@ -116,6 +117,43 @@ public class AuditServiceTest {
         assertEquals(details, result.getDetails());
     }
 
+    @ParameterizedTest
+    @MethodSource("invalidAuditLogInputs")
+    void log_CreatesAuditLogWithAllFields_Failed() {
+        UUID testActorId = null;
+        String action = null;
+        String entityType = null;
+        UUID testEntityId = null;
+        String details = null;
+        String expectedMessage;
+
+         IllegalArgumentException exception = assertThrows(
+                 IllegalArgumentException.class,
+                 () -> auditService.log(actorId, action, entityType, entityId, details)
+         );
+
+         assertEquals(expectedMessage, exception.getMessage());
+
+         verifyNoInteractions(auditLogRepository);
+    }
+
+    private static Stream<Arguments> invalidAuditLogInputs() {
+        UUID sampleId = UUID.randomUUID();
+
+        return Stream.of(
+                Arguments.of(null, "ISSUE_CREATED", "ISSUE", sampleId,
+                        "Issue created", "actorId cannot be null"),
+
+                Arguments.of(sampleId, null, "ISSUE", sampleId,
+                        "Issue created", "action cannot be null"),
+
+                Arguments.of(sampleId, "ISSUE_CREATED", "ISSUE", null,
+                        "Issue created", "entityId cannot be null"),
+
+                Arguments.of(sampleId, "ISSUE_CREATED", "ISSUE", sampleId,
+                        null, "details cannot be null")
+        );
+    }
     @Test
     void log_ReturnsSavedAuditLog_Success() {
         UUID testActorId = UUID.randomUUID();
