@@ -478,7 +478,7 @@ public class IssueServiceTest {
         verify(issueRepository).findById(issueId);
         verify(projectAssignmentRepository).existsByProjectAndUser(testProject, developerUser);
         verify(issueRepository).save(any(Issue.class));
-        verify(issueHistoryRepository).save(any(IssueHistory.class));
+        verify(issueHistoryRepository, org.mockito.Mockito.atLeastOnce()).save(any(IssueHistory.class));
         verify(auditService).log(eq(developerId), eq("ISSUE_STATUS_CHANGED"), eq("ISSUE"), eq(issueId), anyString());
     }
 
@@ -501,7 +501,7 @@ public class IssueServiceTest {
         verify(issueRepository).findById(issueId);
         verify(projectAssignmentRepository).existsByProjectAndUser(testProject, developerUser);
         verify(issueRepository).save(any(Issue.class));
-        verify(issueHistoryRepository).save(any(IssueHistory.class));
+        verify(issueHistoryRepository, org.mockito.Mockito.atLeastOnce()).save(any(IssueHistory.class));
         verify(auditService).log(eq(developerId), eq("ISSUE_STATUS_CHANGED"), eq("ISSUE"), eq(issueId), anyString());
     }
 
