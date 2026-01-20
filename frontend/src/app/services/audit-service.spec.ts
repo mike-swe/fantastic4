@@ -57,7 +57,7 @@ describe('AuditService', () => {
 
       it('should fetch all audit logs', () => {
         service.getAllAuditLogs().subscribe(logs => {
-          expect(logs.length).toBe(2);
+          expect(logs.length).toBe(1);
           expect(logs).toEqual(mockData);
       });
 
