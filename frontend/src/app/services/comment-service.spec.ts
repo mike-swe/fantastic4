@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
+
 import { CommentService } from './comment-service';
 import { Comment } from '../interfaces/comment';
 import { User } from "../interfaces/user";
@@ -108,17 +109,45 @@ describe('CommentService', () => {
     req.flush(mockResponse);
 
     const result = await promise;
-    expect(result.content).toBe('content');
+    expect(result.content).toBe(content);
 
 
   });
 
-  it('should updateComment', () => {
-    expect(service).toBeTruthy();
+  it('should updateComment', async () => {
+    const issueId = 'issueid';
+    const commentId = 'commentid'
+    const content = 'new comment';
+
+    const mockResponse = {...mockComment[0],content:content};
+
+    const promise = firstValueFrom(service.updateComment(issueId,commentId,content));
+    
+    const req = httpMock.expectOne(`${baseUrl}/issues/${issueId}/comments/${commentId}`);
+    expect(req.request.method).toBe('PUT');
+    req.flush(mockResponse)
+
+    const result = await promise;
+    expect(result.content).toEqual(content);
+    
   });
 
-  it('should deleteComment', () => {
-    expect(service).toBeTruthy();
+  it('should deleteComment', async () => {
+    const issueId = '67';
+    const commentId = '101';
+
+    // 1. Act: Call the delete method
+    const promise = firstValueFrom(service.deleteComment(issueId, commentId));
+
+    // 2. Assert: Verify the endpoint and method
+    const req = httpMock.expectOne(`${baseUrl}/issues/${issueId}/comments/${commentId}`);
+    expect(req.request.method).toBe('DELETE');
+
+    // 3. Respond: Flush a null/empty body (typical for DELETE)
+    req.flush(null);
+
+    // 4. Await: Ensure the observable completes without error
+    await promise;
   });
 
 });
