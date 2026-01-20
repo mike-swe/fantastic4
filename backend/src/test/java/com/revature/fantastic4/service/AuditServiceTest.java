@@ -8,6 +8,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verifyNoInteractions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import java.util.stream.Stream;
+
+
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -120,13 +128,6 @@ public class AuditServiceTest {
     @ParameterizedTest
     @MethodSource("invalidAuditLogInputs")
     void log_CreatesAuditLogWithAllFields_Failed() {
-        UUID testActorId = null;
-        String action = null;
-        String entityType = null;
-        UUID testEntityId = null;
-        String details = null;
-        String expectedMessage;
-
          IllegalArgumentException exception = assertThrows(
                  IllegalArgumentException.class,
                  () -> auditService.log(actorId, action, entityType, entityId, details)
@@ -137,7 +138,7 @@ public class AuditServiceTest {
          verifyNoInteractions(auditLogRepository);
     }
 
-    private static Stream<Arguments> invalidAuditLogInputs() {
+    private static Stream<Arguments> invalidAuditLogInputs(UUID testActorId, String action, String entityType, UUID testEntityId, String details, String expectedMessage) {
         UUID sampleId = UUID.randomUUID();
 
         return Stream.of(
