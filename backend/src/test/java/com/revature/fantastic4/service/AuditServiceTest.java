@@ -127,10 +127,10 @@ public class AuditServiceTest {
 
     @ParameterizedTest
     @MethodSource("invalidAuditLogInputs")
-    void log_CreatesAuditLogWithAllFields_Failed() {
+    void log_CreatesAuditLogWithAllFields_Failed(UUID testActorId, String action, String entityType, UUID testEntityId, String details, String expectedMessage) {
          IllegalArgumentException exception = assertThrows(
                  IllegalArgumentException.class,
-                 () -> auditService.log(actorId, action, entityType, entityId, details)
+                 () -> auditService.log(testActorId, action, entityType, testEntityId, details)
          );
 
          assertEquals(expectedMessage, exception.getMessage());
@@ -138,7 +138,7 @@ public class AuditServiceTest {
          verifyNoInteractions(auditLogRepository);
     }
 
-    private static Stream<Arguments> invalidAuditLogInputs(UUID testActorId, String action, String entityType, UUID testEntityId, String details, String expectedMessage) {
+    private static Stream<Arguments> invalidAuditLogInputs() {
         UUID sampleId = UUID.randomUUID();
 
         return Stream.of(
