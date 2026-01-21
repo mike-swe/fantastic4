@@ -8,6 +8,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verifyNoInteractions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import java.util.stream.Stream;
+
+
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -22,6 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.revature.fantastic4.entity.AuditLog;
 import com.revature.fantastic4.repository.AuditLogRepository;
+import org.junit.jupiter.params.ParameterizedTest;
 
 @ExtendWith(MockitoExtension.class)
 public class AuditServiceTest {
@@ -81,12 +90,12 @@ public class AuditServiceTest {
     // ========== log() Tests ==========
 
     @Test
-    void log_CreatesAuditLogWithAllFields_Success() {
-        UUID testActorId = UUID.randomUUID();
-        String action = "ISSUE_CREATED";
-        String entityType = "ISSUE";
-        UUID testEntityId = UUID.randomUUID();
-        String details = "Issue created with title: New Issue";
+    void log_CreatesAuditLogWithAllFields_Success(UUID testActorId, String action, String entityType, UUID testEntityId, String details, String expectedMessage) {
+        testActorId = UUID.randomUUID();
+        action = "ISSUE_CREATED";
+        entityType = "ISSUE";
+        testEntityId = UUID.randomUUID();
+        details = "Issue created with title: New Issue";
 
         when(auditLogRepository.save(any(AuditLog.class))).thenAnswer(invocation -> {
             AuditLog log = invocation.getArgument(0);
@@ -116,6 +125,36 @@ public class AuditServiceTest {
         assertEquals(details, result.getDetails());
     }
 
+    @ParameterizedTest
+    @MethodSource("invalidAuditLogInputs")
+    void log_CreatesAuditLogWithAllFields_Failed(UUID testActorId, String action, String entityType, UUID testEntityId, String details, String expectedMessage) {
+         IllegalArgumentException exception = assertThrows(
+                 IllegalArgumentException.class,
+                 () -> auditService.log(testActorId, action, entityType, testEntityId, details)
+         );
+
+         assertEquals(expectedMessage, exception.getMessage());
+
+         verifyNoInteractions(auditLogRepository);
+    }
+
+    private static Stream<Arguments> invalidAuditLogInputs() {
+        UUID sampleId = UUID.randomUUID();
+
+        return Stream.of(
+                Arguments.of(null, "ISSUE_CREATED", "ISSUE", sampleId,
+                        "Issue created", "actorId cannot be null"),
+
+                Arguments.of(sampleId, null, "ISSUE", sampleId,
+                        "Issue created", "action cannot be null"),
+
+                Arguments.of(sampleId, "ISSUE_CREATED", "ISSUE", null,
+                        "Issue created", "entityId cannot be null"),
+
+                Arguments.of(sampleId, "ISSUE_CREATED", "ISSUE", sampleId,
+                        null, "details cannot be null")
+        );
+    }
     @Test
     void log_ReturnsSavedAuditLog_Success() {
         UUID testActorId = UUID.randomUUID();
