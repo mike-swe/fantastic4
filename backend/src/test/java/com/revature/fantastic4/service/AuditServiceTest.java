@@ -90,12 +90,12 @@ public class AuditServiceTest {
     // ========== log() Tests ==========
 
     @Test
-    void log_CreatesAuditLogWithAllFields_Success() {
-        UUID testActorId = UUID.randomUUID();
-        String action = "ISSUE_CREATED";
-        String entityType = "ISSUE";
-        UUID testEntityId = UUID.randomUUID();
-        String details = "Issue created with title: New Issue";
+    void log_CreatesAuditLogWithAllFields_Success(UUID testActorId, String action, String entityType, UUID testEntityId, String details, String expectedMessage) {
+        testActorId = UUID.randomUUID();
+        action = "ISSUE_CREATED";
+        entityType = "ISSUE";
+        testEntityId = UUID.randomUUID();
+        details = "Issue created with title: New Issue";
 
         when(auditLogRepository.save(any(AuditLog.class))).thenAnswer(invocation -> {
             AuditLog log = invocation.getArgument(0);
