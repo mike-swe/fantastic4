@@ -16,9 +16,28 @@ export class App {
   private router = inject(Router);
   
   private noNavbarRoutes = ['/login', '/create-account'];
+
+  
   
   protected showNavbar = computed(() => {
     const currentRoute = this.router.url;
     return !this.noNavbarRoutes.some(route => currentRoute.includes(route));
   });
 }
+
+/*
+
+private currentUrl = toSignal(
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      map(event => (event as NavigationEnd).urlAfterRedirects)
+    ),
+    { initialValue: this.router.url }
+  );
+  
+  protected showNavbar = computed(() => {
+    const url = this.currentUrl() || '';
+    return !this.noNavbarRoutes.some(route => url.includes(route));
+  });
+
+*/
