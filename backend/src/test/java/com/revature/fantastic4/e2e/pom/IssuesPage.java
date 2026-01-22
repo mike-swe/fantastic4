@@ -1,7 +1,6 @@
 package com.revature.fantastic4.e2e.pom;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
@@ -81,7 +80,7 @@ public class IssuesPage extends BasePage {
         WebElement titleInput = driver.findElement(ISSUE_TITLE_INPUT);
         titleInput.clear();
         titleInput.sendKeys(title);
-        ((JavascriptExecutor) driver).executeScript(
+        getJavascriptExecutor().executeScript(
             "arguments[0].value = arguments[1]; " +
             "arguments[0].dispatchEvent(new Event('input', { bubbles: true })); " +
             "arguments[0].dispatchEvent(new Event('change', { bubbles: true }));",
@@ -93,7 +92,7 @@ public class IssuesPage extends BasePage {
         WebElement descInput = driver.findElement(ISSUE_DESCRIPTION_INPUT);
         descInput.clear();
         descInput.sendKeys(description);
-        ((JavascriptExecutor) driver).executeScript(
+        getJavascriptExecutor().executeScript(
             "arguments[0].value = arguments[1]; " +
             "arguments[0].dispatchEvent(new Event('input', { bubbles: true })); " +
             "arguments[0].dispatchEvent(new Event('change', { bubbles: true }));",
@@ -134,7 +133,7 @@ public class IssuesPage extends BasePage {
                 projectNameLower.contains(optionTextLower)) {
                 select.selectByValue(optionValue);
 
-                ((JavascriptExecutor) driver).executeScript(
+                getJavascriptExecutor().executeScript(
                     "arguments[0].value = arguments[1]; " +
                     "arguments[0].dispatchEvent(new Event('change', { bubbles: true }));",
                     selectElement, optionValue);
@@ -148,7 +147,7 @@ public class IssuesPage extends BasePage {
         throw new RuntimeException("Project not found in dropdown: " + projectName);
         }
         
-        ((JavascriptExecutor) driver).executeScript(
+        getJavascriptExecutor().executeScript(
             "arguments[0].dispatchEvent(new Event('change', { bubbles: true }));", selectElement);
         
 
@@ -197,15 +196,15 @@ public class IssuesPage extends BasePage {
             WebElement descInput = driver.findElement(ISSUE_DESCRIPTION_INPUT);
             WebElement projectSelect = driver.findElement(ISSUE_PROJECT_SELECT);
             
-            ((JavascriptExecutor) driver).executeScript(
+            getJavascriptExecutor().executeScript(
                 "arguments[0].dispatchEvent(new Event('input', { bubbles: true })); " +
                 "arguments[0].dispatchEvent(new Event('blur', { bubbles: true }));",
                 titleInput);
-            ((JavascriptExecutor) driver).executeScript(
+            getJavascriptExecutor().executeScript(
                 "arguments[0].dispatchEvent(new Event('input', { bubbles: true })); " +
                 "arguments[0].dispatchEvent(new Event('blur', { bubbles: true }));",
                 descInput);
-            ((JavascriptExecutor) driver).executeScript(
+            getJavascriptExecutor().executeScript(
                 "arguments[0].dispatchEvent(new Event('change', { bubbles: true }));",
                 projectSelect);
             

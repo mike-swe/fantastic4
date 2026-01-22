@@ -6,6 +6,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.aop.framework.Advised;
 
 import java.time.Duration;
 import java.util.List;
@@ -68,13 +69,49 @@ public class BasePage {
         driver.findElement(locator).click();
     }
 
+    /**
+     * Safely obtains a JavascriptExecutor from the WebDriver, handling Spring proxy cases.
+     * Spring creates proxies for @ScenarioScope beans, which don't directly implement
+     * JavascriptExecutor even though the underlying WebDriver does.
+     */
+    protected JavascriptExecutor getJavascriptExecutor() {
+        // if driver is already a JavascriptExecutor (non-proxied case)
+        if (driver instanceof JavascriptExecutor) {
+            return (JavascriptExecutor) driver;
+        }
+        
+        // Unwrap Spring proxy to get the underlying WebDriver
+        if (driver instanceof Advised) {
+            try {
+                Object target = ((Advised) driver).getTargetSource().getTarget();
+                if (target instanceof JavascriptExecutor) {
+                    return (JavascriptExecutor) target;
+                }
+                
+                throw new RuntimeException(
+                    "Unwrapped WebDriver is not a JavascriptExecutor. " +
+                    "Driver class: " + driver.getClass().getName() + 
+                    ", Target class: " + target.getClass().getName());
+            } catch (Exception e) {
+                throw new RuntimeException(
+                    "Unable to unwrap Spring proxy to get target WebDriver. " +
+                    "Driver class: " + driver.getClass().getName(), e);
+            }
+        }
+        
+        // Not a proxy and not a JavascriptExecutor 
+        throw new RuntimeException(
+            "WebDriver is not a JavascriptExecutor and is not a Spring proxy. " +
+            "Driver class: " + driver.getClass().getName());
+    }
+
     protected void clickElementWithJavaScript(WebElement element) {
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+        getJavascriptExecutor().executeScript("arguments[0].click();", element);
     }
 
     protected void checkForJavaScriptErrors() {
         try {
-            Object logs = ((JavascriptExecutor) driver).executeScript(
+            getJavascriptExecutor().executeScript(
                 "return window.console && window.console.getLogs ? window.console.getLogs() : []");
         } catch (Exception e) {
         }
