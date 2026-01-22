@@ -1,0 +1,11 @@
+node_modules
+target
+.git
+.vscode
+.gradle
+.github
+node_modules
+frontend/node_modules
+build
+bin
+.git
