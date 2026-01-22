@@ -25,6 +25,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.revature.fantastic4.entity.AuditLog;
 import com.revature.fantastic4.entity.Issue;
 import com.revature.fantastic4.entity.IssueHistory;
 import com.revature.fantastic4.entity.Project;
@@ -492,6 +493,18 @@ public class IssueServiceTest {
         when(issueRepository.save(any(Issue.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(issueHistoryRepository.save(any(IssueHistory.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
+        when(auditService.log(any(UUID.class), anyString(), anyString(), any(UUID.class), anyString()))
+        .thenAnswer(invocation -> {
+            AuditLog log = new AuditLog();
+            log.setActorUserId(invocation.getArgument(0));
+            log.setAction(invocation.getArgument(1));
+            log.setEntityType(invocation.getArgument(2));
+            log.setEntityId(invocation.getArgument(3));
+            log.setDetails(invocation.getArgument(4));
+            log.setTimestamp(Instant.now());
+            return log;
+        });
+
         Issue result = issueService.updateIssueStatus(issueId, newStatus, developerUser);
 
         assertEquals(newStatus, result.getStatus());
@@ -502,7 +515,7 @@ public class IssueServiceTest {
         verify(issueRepository).findById(issueId);
         verify(projectAssignmentRepository).existsByProjectAndUser(testProject, developerUser);
         verify(issueRepository).save(any(Issue.class));
-        verify(issueHistoryRepository).save(any(IssueHistory.class));
+        verify(issueHistoryRepository, times(2)).save(any(IssueHistory.class));
         verify(auditService).log(eq(developerId), eq("ISSUE_STATUS_CHANGED"), eq("ISSUE"), eq(issueId), anyString());
     }
 
