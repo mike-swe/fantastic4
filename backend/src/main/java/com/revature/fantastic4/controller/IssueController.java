@@ -32,7 +32,10 @@ public class IssueController {
     @PostMapping
     public ResponseEntity<Issue> createIssue(
             @RequestBody Issue issue,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader == null || authHeader.trim().isEmpty()) {
+            throw new IllegalArgumentException("Authorization header is required");
+        }
         String token = jwtUtil.extractTokenFromHeader(authHeader);
         UUID testerUserId = jwtUtil.extractId(token);
         User tester = userService.getUserById(testerUserId);
@@ -53,7 +56,10 @@ public class IssueController {
     public ResponseEntity<Issue> updateIssueStatus(
             @PathVariable UUID issueId,
             @RequestBody Map<String, String> requestBody,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader == null || authHeader.trim().isEmpty()) {
+            throw new IllegalArgumentException("Authorization header is required");
+        }
         String token = jwtUtil.extractTokenFromHeader(authHeader);
         UUID userId = jwtUtil.extractId(token);
         User user = userService.getUserById(userId);
@@ -73,7 +79,10 @@ public class IssueController {
     public ResponseEntity<Issue> updateIssue(
             @PathVariable UUID issueId,
             @RequestBody Issue issue,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader == null || authHeader.trim().isEmpty()) {
+            throw new IllegalArgumentException("Authorization header is required");
+        }
         String token = jwtUtil.extractTokenFromHeader(authHeader);
         UUID userId = jwtUtil.extractId(token);
         User user = userService.getUserById(userId);
@@ -117,7 +126,10 @@ public class IssueController {
     @GetMapping("/assigned/{developerId}")
     public ResponseEntity<List<Issue>> getAssignedIssues(
             @PathVariable UUID developerId,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader == null || authHeader.trim().isEmpty()) {
+            throw new IllegalArgumentException("Authorization header is required");
+        }
         String token = jwtUtil.extractTokenFromHeader(authHeader);
         UUID userId = jwtUtil.extractId(token);
         User user = userService.getUserById(userId);
@@ -141,7 +153,10 @@ public class IssueController {
     public ResponseEntity<Comment> createComment(
             @PathVariable UUID issueId,
             @RequestBody Map<String, String> requestBody,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader == null || authHeader.trim().isEmpty()) {
+            throw new IllegalArgumentException("Authorization header is required");
+        }
         String token = jwtUtil.extractTokenFromHeader(authHeader);
         UUID userId = jwtUtil.extractId(token);
         User user = userService.getUserById(userId);
@@ -166,7 +181,10 @@ public class IssueController {
             @PathVariable UUID issueId,
             @PathVariable UUID commentId,
             @RequestBody Map<String, String> requestBody,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader == null || authHeader.trim().isEmpty()) {
+            throw new IllegalArgumentException("Authorization header is required");
+        }
         String token = jwtUtil.extractTokenFromHeader(authHeader);
         UUID userId = jwtUtil.extractId(token);
         User user = userService.getUserById(userId);
@@ -184,7 +202,10 @@ public class IssueController {
     public ResponseEntity<Void> deleteComment(
             @PathVariable UUID issueId,
             @PathVariable UUID commentId,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader == null || authHeader.trim().isEmpty()) {
+            throw new IllegalArgumentException("Authorization header is required");
+        }
         String token = jwtUtil.extractTokenFromHeader(authHeader);
         UUID userId = jwtUtil.extractId(token);
         User user = userService.getUserById(userId);
