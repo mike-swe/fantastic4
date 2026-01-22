@@ -24,6 +24,9 @@ public class AuditController
     private final JwtUtil jwtUtil;
 
     private void validateAdminRole(String authHeader) {
+        if (authHeader == null || authHeader.trim().isEmpty()) {
+            throw new IllegalArgumentException("Authorization header is required");
+        }
         String token = jwtUtil.extractTokenFromHeader(authHeader);
         UUID userId = jwtUtil.extractId(token);
         User user = userService.getUserById(userId);
@@ -35,7 +38,7 @@ public class AuditController
 
     @GetMapping
     public ResponseEntity<List<AuditLog>> getAllLogs(
-            @RequestHeader("Authorization") String authHeader) 
+            @RequestHeader(value = "Authorization", required = false) String authHeader) 
     {
         validateAdminRole(authHeader);
         List<AuditLog> logs = auditService.getAllLogs();
@@ -45,7 +48,7 @@ public class AuditController
     @GetMapping("/entity/{entityType}")
     public ResponseEntity<List<AuditLog>> getLogsByEntityType(
             @PathVariable String entityType,
-            @RequestHeader("Authorization") String authHeader) 
+            @RequestHeader(value = "Authorization", required = false) String authHeader) 
     {
         validateAdminRole(authHeader);
         List<AuditLog> logs = auditService.getLogsByEntityType(entityType);
@@ -55,7 +58,7 @@ public class AuditController
     @GetMapping("/actor/{actorId}")
     public ResponseEntity<List<AuditLog>> getLogsByActor(
             @PathVariable UUID actorId,
-            @RequestHeader("Authorization") String authHeader) 
+            @RequestHeader(value = "Authorization", required = false) String authHeader) 
     {
         validateAdminRole(authHeader);
         List<AuditLog> logs = auditService.getLogsByActor(actorId);

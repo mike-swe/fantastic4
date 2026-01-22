@@ -28,7 +28,10 @@ public class ProjectController {
     @PostMapping
     public ResponseEntity<Project> createProject(
             @RequestBody Project project,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader == null || authHeader.trim().isEmpty()) {
+            throw new IllegalArgumentException("Authorization header is required");
+        }
         String token = jwtUtil.extractTokenFromHeader(authHeader);
         UUID adminUserId = jwtUtil.extractId(token);
         User adminUser = userService.getUserById(adminUserId);
@@ -46,7 +49,10 @@ public class ProjectController {
     public ResponseEntity<Project> updateProject(
             @PathVariable UUID projectId,
             @RequestBody Project project,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader == null || authHeader.trim().isEmpty()) {
+            throw new IllegalArgumentException("Authorization header is required");
+        }
         String token = jwtUtil.extractTokenFromHeader(authHeader);
         UUID adminUserId = jwtUtil.extractId(token);
         User adminUser = userService.getUserById(adminUserId);
@@ -78,7 +84,10 @@ public class ProjectController {
     public ResponseEntity<Map<String, String>> assignUserToProject(
         @PathVariable UUID projectId,
             @PathVariable UUID userId,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader == null || authHeader.trim().isEmpty()) {
+            throw new IllegalArgumentException("Authorization header is required");
+        }
         String token = jwtUtil.extractTokenFromHeader(authHeader);
         UUID adminUserId = jwtUtil.extractId(token);
         User adminUser = userService.getUserById(adminUserId);
@@ -95,7 +104,10 @@ public class ProjectController {
     @DeleteMapping("/{projectId}")
     public ResponseEntity<Map<String, String>> deleteProject(
             @PathVariable UUID projectId,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader == null || authHeader.trim().isEmpty()) {
+            throw new IllegalArgumentException("Authorization header is required");
+        }
         String token = jwtUtil.extractTokenFromHeader(authHeader);
         UUID adminUserId = jwtUtil.extractId(token);
         User adminUser = userService.getUserById(adminUserId);
